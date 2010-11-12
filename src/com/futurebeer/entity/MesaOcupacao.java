@@ -29,4 +29,43 @@ public class MesaOcupacao implements Serializable{
 	@JoinColumn(name="mesa_id", referencedColumnName="mesa_id")
 	private Mesa mesa;
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Date getAbertura() {
+		return abertura;
+	}
+
+	public void setAbertura(Date abertura) {
+		this.abertura = abertura;
+	}
+
+	public Date getFechamento() {
+		return fechamento;
+	}
+
+	public void setFechamento(Date fechamento) {
+		this.fechamento = fechamento;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public Mesa getMesa() {
+		return mesa;
+	}
+
+	public void setMesa(Mesa mesa) {
+		this.mesa = mesa;
+	}
 }

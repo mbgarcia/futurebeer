@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.prime.com.tr/ui">
+
+<h:head> 
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/styles.css"/>
+	<title>
+		<h:outputText value="#{msgs.windowTitle}"/> 
+	</title>
+</h:head>
+
+<h:body>
+	<f:view contentType="text/html">
+		<h:form prependId="false">
+			<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="5" rows="25" paginator="true" effect="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+				<p:column>
+					<p:panel header="#{msgs.mesa_texto} #{mesa.numero}" style="text-align:center">
+						<h:panelGrid columns="1" style="width:100%">
+							<p:commandLink update="pedidosDetail" oncomplete="pedidosDialog.show()" title="Ver Pedidos">  
+	                        	<p:graphicImage value="/resources/images/search.png"/>
+	                        	<f:setPropertyActionListener value="#{mesa}" target="#{mesaBean.selectedMesa}" />  
+	                    	</p:commandLink>
+						</h:panelGrid>
+					</p:panel>
+				</p:column>
+			</p:dataGrid>
+
+			<p:dialog header="Pedidos" widgetVar="pedidosDialog" width="200" height="175" modal="true">
+				<p:outputPanel id="pedidosDetail" style="text-align:center;" layout="block">
+					<h:panelGrid columns="2" cellpadding="5">
+						<h:outputLabel for="mesaNum" value="No Mesa: " />
+						<h:outputText id="mesaNum" value="#{mesaBean.selectedMesa.numero}" />
+					</h:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</f:view>
+	</h:body>
+</html>
