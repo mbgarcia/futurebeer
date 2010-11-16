@@ -6,7 +6,7 @@ import java.util.Date;
 public class MesaDTO implements Serializable{
 	private static final long serialVersionUID = -2971076177028793158L;
 	
-	private String numero;
+	private int numero;
 	
 	private int status;
 	
@@ -16,11 +16,11 @@ public class MesaDTO implements Serializable{
 	
 	public MesaDTO() {}
 
-	public String getNumero() {
+	public int getNumero() {
 		return numero;
 	}
 
-	public void setNumero(String numero) {
+	public void setNumero(int numero) {
 		this.numero = numero;
 	}
 

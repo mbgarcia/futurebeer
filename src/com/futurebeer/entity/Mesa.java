@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -17,10 +19,11 @@ public class Mesa implements Serializable{
 	
 	@Id
 	@Column(name="mesa_id")
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
 	@Column(name="numero", nullable=false)
-	private String numero;
+	private int numero;
 	
 	@Column(name="status", nullable=true)
 	private int status;
@@ -36,11 +39,11 @@ public class Mesa implements Serializable{
 		this.id = id;
 	}
 
-	public String getNumero() {
+	public int getNumero() {
 		return numero;
 	}
 
-	public void setNumero(String numero) {
+	public void setNumero(int numero) {
 		this.numero = numero;
 	}
 	

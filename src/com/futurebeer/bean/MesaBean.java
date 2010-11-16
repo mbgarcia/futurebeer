@@ -6,8 +6,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
-import com.futurebeer.dao.MesaDao;
-import com.futurebeer.dao.interfaces.IMesaDao;
+import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.exception.BaseException;
 
@@ -18,14 +17,12 @@ public class MesaBean implements Serializable{
 
 	private MesaDTO selectedMesa;
 	
-	IMesaDao mesaDao = new MesaDao();
-
 	public List<MesaDTO> getMesas() {
 		//chama a DAO
 		System.out.println("getMesas");
 		// Begin unit of work
 		try {
-			return mesaDao.getMesas();
+			return FactoryDao.getInstance().getMesaDao().getMesas();
 		} catch (BaseException e) {
 			e.printStackTrace();
 		}

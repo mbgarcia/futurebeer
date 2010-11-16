@@ -9,7 +9,7 @@ public class HibernateUtil {
     private static HibernateUtil instance;
     
     private static final SessionFactory sessionFactory = buildSessionFactory();
-
+    
     private HibernateUtil() {	}
     
     public static HibernateUtil getInstance(){
@@ -24,10 +24,7 @@ public class HibernateUtil {
     	System.out.println("buildSessionFactory");
         try {
             // Create the SessionFactory from hibernate.cfg.xml
-            return new AnnotationConfiguration()
-            .addAnnotatedClass(com.futurebeer.entity.Mesa.class)
-            .addAnnotatedClass(com.futurebeer.entity.MesaOcupacao.class)
-            .configure().buildSessionFactory();
+            return new AnnotationConfiguration().configure().buildSessionFactory();
         }
         catch (Throwable ex) {
             // Make sure you log the exception, as it might be swallowed

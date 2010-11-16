@@ -2,12 +2,17 @@ package com.futurebeer.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -17,17 +22,24 @@ public class MesaOcupacao implements Serializable{
 	
 	@Id
 	@Column(name="mesa_ocupacao_id")
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
+	@Column(name="abertura")
 	private Date abertura;
 	
+	@Column(name="fechamento")
 	private Date fechamento;
 	
+	@Column(name="total")
 	private double total;
 	
 	@ManyToOne(optional=false)
 	@JoinColumn(name="mesa_id", referencedColumnName="mesa_id")
 	private Mesa mesa;
+	
+	@OneToMany(mappedBy="mesaOcupacao", fetch=FetchType.LAZY)
+	private List<Pedido> pedidos;
 
 	public int getId() {
 		return id;
@@ -67,5 +79,13 @@ public class MesaOcupacao implements Serializable{
 
 	public void setMesa(Mesa mesa) {
 		this.mesa = mesa;
+	}
+
+	public List<Pedido> getPedidos() {
+		return pedidos;
+	}
+
+	public void setPedidos(List<Pedido> pedidos) {
+		this.pedidos = pedidos;
 	}
 }

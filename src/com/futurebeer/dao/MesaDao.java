@@ -22,4 +22,8 @@ public class MesaDao implements IMesaDao{
 
 		return mesas;
 	}
+	
+//	public MesaOcupacao getOcupacaoMesa(int idMesa){
+//		
+//	}
 }
