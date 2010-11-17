@@ -36,5 +36,5 @@ public class MesaBean implements Serializable{
 
 	public void setSelectedMesa(MesaDTO selectedMesa) {
 		this.selectedMesa = selectedMesa;
-	}
+	}	
 }

@@ -19,10 +19,10 @@ public class ItemPedido implements Serializable{
 	@Id
 	@Column(name="item_pedido_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Integer id;
 	
 	@Column(name="qtdade", nullable=false)
-	private int qtdade;
+	private Integer qtdade;
 	
 	@ManyToOne(optional=false)
 	@JoinColumn(name="pedido_id", referencedColumnName="pedido_id")
@@ -32,19 +32,19 @@ public class ItemPedido implements Serializable{
 	@JoinColumn(name="produto_id", referencedColumnName="produto_id")
 	private Produto produto;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getQtdade() {
+	public Integer getQtdade() {
 		return qtdade;
 	}
 
-	public void setQtdade(int qtdade) {
+	public void setQtdade(Integer qtdade) {
 		this.qtdade = qtdade;
 	}
 

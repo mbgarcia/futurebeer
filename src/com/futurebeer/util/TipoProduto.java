@@ -1,15 +1,15 @@
 package com.futurebeer.util;
 
 public enum TipoProduto {
-	ALIMENTO(1), BEBIDA(2);
+	ALIMENTO(0), BEBIDA(1), COZINHA(2);
 
 	private int idTipo;
-	
-	private TipoProduto(int x){
+
+	TipoProduto(int x) {
 		idTipo = x;
 	}
-	
-	public String toString() {
-		return String.valueOf(idTipo);
+
+	public int toInt() {
+		return idTipo;
 	}
 }

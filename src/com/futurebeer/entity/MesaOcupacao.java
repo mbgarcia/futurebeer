@@ -23,16 +23,16 @@ public class MesaOcupacao implements Serializable{
 	@Id
 	@Column(name="mesa_ocupacao_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Integer id;
 	
-	@Column(name="abertura")
+	@Column(name="abertura", nullable=true)
 	private Date abertura;
 	
-	@Column(name="fechamento")
+	@Column(name="fechamento", nullable=true)
 	private Date fechamento;
 	
-	@Column(name="total")
-	private double total;
+	@Column(name="total", nullable=true)
+	private Double total;
 	
 	@ManyToOne(optional=false)
 	@JoinColumn(name="mesa_id", referencedColumnName="mesa_id")
@@ -41,11 +41,11 @@ public class MesaOcupacao implements Serializable{
 	@OneToMany(mappedBy="mesaOcupacao", fetch=FetchType.LAZY)
 	private List<Pedido> pedidos;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -65,11 +65,11 @@ public class MesaOcupacao implements Serializable{
 		this.fechamento = fechamento;
 	}
 
-	public double getTotal() {
+	public Double getTotal() {
 		return total;
 	}
 
-	public void setTotal(double total) {
+	public void setTotal(Double total) {
 		this.total = total;
 	}
 

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +21,7 @@ public class Produto implements Serializable{
 	@Id
 	@Column(name="produto_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Integer id;
 	
 	@Column(name="descricao")
 	private String descricao;
@@ -28,13 +30,15 @@ public class Produto implements Serializable{
 	private double valor;
 	
 	@Column(name="tipo")
+//	@Type(type="com.futurebeer.util.TipoProdutoUserType")
+	@Enumerated(EnumType.ORDINAL)
 	private TipoProduto tipo;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

@@ -20,39 +20,39 @@ public class Mesa implements Serializable{
 	@Id
 	@Column(name="mesa_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Integer id;
 	
 	@Column(name="numero", nullable=false)
-	private int numero;
+	private Integer numero;
 	
 	@Column(name="status", nullable=true)
-	private int status;
+	private Integer status;
 	
 	@OneToMany(mappedBy="mesa", fetch=FetchType.LAZY)
 	private List<MesaOcupacao> ocupacoes;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getNumero() {
+	public Integer getNumero() {
 		return numero;
 	}
 
-	public void setNumero(int numero) {
+	public void setNumero(Integer numero) {
 		this.numero = numero;
 	}
 	
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

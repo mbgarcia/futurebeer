@@ -10,6 +10,8 @@ public class MesaDTO implements Serializable{
 	
 	private int status;
 	
+	private int idOcupacao;
+	
 	private Date abertura;
 	
 	private Date fechamento;
@@ -24,12 +26,20 @@ public class MesaDTO implements Serializable{
 		this.numero = numero;
 	}
 
-	public int isStatus() {
+	public int getStatus() {
 		return status;
 	}
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public int getIdOcupacao() {
+		return idOcupacao;
+	}
+
+	public void setIdOcupacao(int idOcupacao) {
+		this.idOcupacao = idOcupacao;
 	}
 
 	public Date getAbertura() {

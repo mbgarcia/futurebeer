@@ -6,6 +6,7 @@ import java.util.List;
 import com.futurebeer.dao.interfaces.IMesaDao;
 import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.entity.Mesa;
+import com.futurebeer.entity.MesaOcupacao;
 import com.futurebeer.util.HibernateUtil;
 
 public class MesaDao implements IMesaDao{
@@ -17,6 +18,13 @@ public class MesaDao implements IMesaDao{
 			MesaDTO mesa = new MesaDTO();
 			mesa.setNumero(item.getNumero());
 			mesa.setStatus(item.getStatus());
+		
+			List<MesaOcupacao> ocupacoes = item.getOcupacoes();
+			
+			for (MesaOcupacao mesaOcupacao : ocupacoes) {
+				mesa.setIdOcupacao(mesaOcupacao.getId());
+			}
+			
 			mesas.add(mesa);
 		}
 

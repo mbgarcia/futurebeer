@@ -5,6 +5,7 @@
 	xmlns:h="http://java.sun.com/jsf/html" 
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:p="http://primefaces.prime.com.tr/ui">
 
 <h:head> 
@@ -20,7 +21,7 @@
 			<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="5" rows="25" paginator="true" effect="true"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
 				<p:column>
-					<p:panel header="#{msgs.mesa_texto} #{mesa.numero}" style="text-align:center">
+					<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center">
 						<h:panelGrid columns="1" style="width:100%">
 							<p:commandLink update="pedidosDetail" oncomplete="pedidosDialog.show()" title="Ver Pedidos">  
 	                        	<p:graphicImage value="/resources/images/search.png"/>
@@ -31,12 +32,38 @@
 				</p:column>
 			</p:dataGrid>
 
-			<p:dialog header="Pedidos" widgetVar="pedidosDialog" width="200" height="175" modal="true">
-				<p:outputPanel id="pedidosDetail" style="text-align:center;" layout="block">
-					<h:panelGrid columns="2" cellpadding="5">
-						<h:outputLabel for="mesaNum" value="No Mesa: " />
-						<h:outputText id="mesaNum" value="#{mesaBean.selectedMesa.numero}" />
-					</h:panelGrid>
+			<p:dialog header="#{msgs.pedido_label} para a #{msgs.mesa_label} - #{mesaBean.selectedMesa.numero}" widgetVar="pedidosDialog" width="600" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+				<p:growl id="messages" />
+				
+				<p:outputPanel id="pedidosDetail" style="text-align:left;">
+					<p>
+						<h:outputLabel for="listaProduto" value="#{msgs.produtos_label}" />
+						<br/>
+						<h:selectOneListbox id="listaProduto" value="#{pedidoBean.idProduto}" size="10" style="width:100%">
+							<f:selectItems value="#{produtoBean.produtos}" var="p" itemLabel="#{p.descricao}" itemValue="#{p.idProduto}"/>
+						</h:selectOneListbox>
+					</p>
+					<p>
+						<h:outputLabel for="inputQtdade" value="#{msgs.qtdade_label}" />
+						<h:inputText id="inputQtdade" value="#{pedidoBean.qtdade}"/>
+						<p:commandButton actionListener="#{pedidoBean.addItem}" value="#{msgs.btn_add_item}" update="itensTable"/>
+					</p>
+					<p:dataTable var="item" value="#{pedidoBean.itens}" id="itensTable" scrollable="true" height="120">
+						<p:column style="width:200px">
+							<f:facet name="header">
+								#{msgs.produto_label}
+							</f:facet>
+							<h:outputText value="#{item.idProduto}"/>
+						</p:column>
+						<p:column width="40">
+							<f:facet name="header">
+								#{msgs.qtdade_label}
+							</f:facet>
+							<h:outputText value="#{item.qtdade}"/>
+						</p:column>
+					</p:dataTable>
+					<p:commandButton actionListener="#{pedidoBean.cancelaPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_cancelar_pedido}"/>
+					<p:commandButton actionListener="#{pedidoBean.concluirPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_concluir_pedido}" update="messages"/>
 				</p:outputPanel>
 			</p:dialog>
 		</h:form>
