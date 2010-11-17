@@ -23,7 +23,7 @@ public class Mesa implements Serializable{
 	private Integer id;
 	
 	@Column(name="numero", nullable=false)
-	private Integer numero;
+	private String numero;
 	
 	@Column(name="status", nullable=true)
 	private Integer status;
@@ -39,11 +39,11 @@ public class Mesa implements Serializable{
 		this.id = id;
 	}
 
-	public Integer getNumero() {
+	public String getNumero() {
 		return numero;
 	}
 
-	public void setNumero(Integer numero) {
+	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 	

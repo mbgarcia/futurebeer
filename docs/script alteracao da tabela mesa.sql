@@ -1,0 +1,1 @@
+ALTER TABLE `futurebeer`.`mesa` CHANGE COLUMN `numero` `numero` VARCHAR(5) NOT NULL  ;
