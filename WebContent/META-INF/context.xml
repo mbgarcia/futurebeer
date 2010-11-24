@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context path="/futurebeer" docBase="futurebeer" debug="5" reloadable="true" crossContext="true">
+	<Resource 
+		name="jdbc/futurebeer" 
+		auth="Container"
+		type="javax.sql.DataSource" 
+		driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://localhost:3306/futurebeer"
+		username="root" password="" 
+		maxActive="20" maxIdle="10" maxWait="-1"/>  
+</context>

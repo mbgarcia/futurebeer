@@ -3,6 +3,7 @@ package com.futurebeer.entity;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,7 +29,7 @@ public class Pedido implements Serializable{
 	@JoinColumn(name="mesa_ocupacao_id", referencedColumnName="mesa_ocupacao_id")
 	private MesaOcupacao mesaOcupacao;
 	
-	@OneToMany(mappedBy="pedido", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="pedido", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private List<ItemPedido> itens;
 
 	public Integer getId() {

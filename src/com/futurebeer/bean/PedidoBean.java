@@ -13,6 +13,7 @@ import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.ItemPedidoDTO;
 import com.futurebeer.dto.PedidoDTO;
 import com.futurebeer.exception.BaseException;
+import com.futurebeer.util.LoggerApp;
 
 @ManagedBean(name="pedidoBean")
 @SessionScoped
@@ -22,6 +23,8 @@ public class PedidoBean implements Serializable{
 	private int idOcupacao;
 
 	private int idProduto;
+	
+	private String descricao;
 	
 	private int qtdade;
 	
@@ -42,6 +45,14 @@ public class PedidoBean implements Serializable{
 	public void setIdProduto(int idProduto) {
 		this.idProduto = idProduto;
 	}
+	
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 
 	public int getQtdade() {
 		return qtdade;
@@ -52,6 +63,9 @@ public class PedidoBean implements Serializable{
 	}
 
 	public List<ItemPedidoDTO> getItens() {
+		if (itens == null){
+			itens = new ArrayList<ItemPedidoDTO>();
+		}
 		return itens;
 	}
 
@@ -60,34 +74,63 @@ public class PedidoBean implements Serializable{
 	}
 	
 	public void addItem(){
+		LoggerApp.debug("Item adicionado [ " + getIdProduto() + " , " + getQtdade() + "]" );
 		if (itens == null){
 			itens = new ArrayList<ItemPedidoDTO>();
 		}
 		
-		ItemPedidoDTO item = new ItemPedidoDTO();
-		item.setIdProduto(getIdProduto());
-		item.setQtdade(getQtdade());
+		try {
+			String descricao = FactoryDao.getInstance().getProdutoDao().findById(getIdProduto()).getDescricao();
+			ItemPedidoDTO item = new ItemPedidoDTO();
+			item.setIdProduto(getIdProduto());
+			item.setDescricao(descricao);
+			item.setQtdade(getQtdade());
+			
+			itens.add(item);
+			this.qtdade = 0;
+		} catch (BaseException e) {
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao processar pedido.");  
+			
+			FacesContext.getCurrentInstance().addMessage(null, message);  
+			
+			e.printStackTrace();
+		}
 		
-		itens.add(item);
 	}
 	
 	public void concluirPedido(){
 		try {
 			PedidoDTO dto = new PedidoDTO();
 			dto.setIdOcupacao(getIdOcupacao());
-			dto.setItens(getItens());
-			itens.clear();
+			List<ItemPedidoDTO> novosItens = new ArrayList<ItemPedidoDTO>();
+			for (ItemPedidoDTO itemDTO : getItens()) {
+				ItemPedidoDTO novoItem = new ItemPedidoDTO();
+				novoItem.setIdProduto(itemDTO.getIdProduto());
+				novoItem.setQtdade(itemDTO.getQtdade());
+				novosItens.add(novoItem);
+			}
+			dto.setItens(novosItens);
 			FactoryDao.getInstance().getPedidoDao().addPedido(dto);
 			
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Mensagem",  "Pedido realizado.");  
 	          
 	        FacesContext.getCurrentInstance().addMessage(null, message);  
 		} catch (BaseException e) {
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao processar pedido.");  
+			
+			FacesContext.getCurrentInstance().addMessage(null, message);  
 			e.printStackTrace();
+		}finally{
+			limpaPedido();
 		}
 	}
 
 	public void cancelaPedido(){
-		itens.clear();
+		limpaPedido();
+	}
+	
+	private void limpaPedido(){
+		this.itens.clear();
+		this.qtdade = 0;
 	}
 }

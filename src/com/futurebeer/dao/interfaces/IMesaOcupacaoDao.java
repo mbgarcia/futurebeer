@@ -9,5 +9,5 @@ import com.futurebeer.exception.BaseException;
 public interface IMesaOcupacaoDao {
 	public List<MesaDTO> getOcupacoes() throws BaseException;
 	
-	public MesaOcupacao findById(int id) throws BaseException;
+	public MesaOcupacao findById(Integer id) throws BaseException;
 }

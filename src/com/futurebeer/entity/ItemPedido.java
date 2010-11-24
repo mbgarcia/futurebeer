@@ -63,4 +63,9 @@ public class ItemPedido implements Serializable{
 	public void setProduto(Produto produto) {
 		this.produto = produto;
 	}
+	
+	@Override
+	public String toString() {
+		return "[qtdade: " + this.getQtdade() + " , produto: " + (this.getProduto() != null?this.getProduto().getDescricao():"nao ha")+"]";
+	}
 }

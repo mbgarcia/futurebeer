@@ -17,17 +17,25 @@ public class MesaBean implements Serializable{
 
 	private MesaDTO selectedMesa;
 	
-	public List<MesaDTO> getMesas() {
+	private int count;
+	
+	private List<MesaDTO> mesas;
+	
+	public MesaBean() {
 		//chama a DAO
-		System.out.println("getMesas");
+		System.out.println("construtor");
 		// Begin unit of work
 		try {
-			return FactoryDao.getInstance().getMesaDao().getMesas();
+			mesas = FactoryDao.getInstance().getMesaDao().getMesas();
 		} catch (BaseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public List<MesaDTO> getMesas() {
+		System.out.println("getMesas : " + count++);
 		
-		return null;
+		return mesas;
 	}
 
 	public MesaDTO getSelectedMesa() {
@@ -36,5 +44,6 @@ public class MesaBean implements Serializable{
 
 	public void setSelectedMesa(MesaDTO selectedMesa) {
 		this.selectedMesa = selectedMesa;
-	}	
+	}
+
 }

@@ -26,4 +26,8 @@ public class ProdutoDTO implements Serializable {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+	
+	public String toString() {
+		return "produtoDTO - [id: "  +this.getIdProduto() + " , descricao: " + this.getDescricao() + "]";
+	}
 }
