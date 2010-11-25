@@ -1,7 +1,8 @@
 package com.futurebeer.util;
 
+
 public enum StatusMesa {
-	OCUPADA(1), LIVRE(2);
+	LIVRE(0), OCUPADA(1);
 	
 	private int status;
 	
@@ -11,5 +12,9 @@ public enum StatusMesa {
 	
 	public String toString() {
 		return String.valueOf(status);
+	}
+
+	public int getStatus() {
+		return status;
 	}
 }

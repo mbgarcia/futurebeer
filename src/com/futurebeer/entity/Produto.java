@@ -30,7 +30,6 @@ public class Produto implements Serializable{
 	private double valor;
 	
 	@Column(name="tipo")
-//	@Type(type="com.futurebeer.util.TipoProdutoUserType")
 	@Enumerated(EnumType.ORDINAL)
 	private TipoProduto tipo;
 

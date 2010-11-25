@@ -16,6 +16,8 @@ public class MesaDTO implements Serializable{
 	
 	private Date fechamento;
 	
+	private String cor;
+	
 	public MesaDTO() {}
 
 	public String getNumero() {
@@ -56,5 +58,13 @@ public class MesaDTO implements Serializable{
 
 	public void setFechamento(Date fechamento) {
 		this.fechamento = fechamento;
+	}
+
+	public String getCor() {
+		return cor;
+	}
+
+	public void setCor(String cor) {
+		this.cor = cor;
 	}
 }

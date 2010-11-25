@@ -5,12 +5,16 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.futurebeer.util.StatusMesa;
 
 @Entity
 @Table(name="mesa")
@@ -26,7 +30,8 @@ public class Mesa implements Serializable{
 	private String numero;
 	
 	@Column(name="status", nullable=true)
-	private Integer status;
+	@Enumerated(EnumType.ORDINAL)
+	private StatusMesa status;
 	
 	@OneToMany(mappedBy="mesa", fetch=FetchType.LAZY)
 	private List<MesaOcupacao> ocupacoes;
@@ -47,12 +52,11 @@ public class Mesa implements Serializable{
 		this.numero = numero;
 	}
 	
-
-	public Integer getStatus() {
+	public StatusMesa getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(StatusMesa status) {
 		this.status = status;
 	}
 

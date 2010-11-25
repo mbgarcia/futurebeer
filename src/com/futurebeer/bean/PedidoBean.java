@@ -133,4 +133,29 @@ public class PedidoBean implements Serializable{
 		this.itens.clear();
 		this.qtdade = 0;
 	}
+	
+	List<ItemPedidoDTO> pedidos = null;
+
+	public List<ItemPedidoDTO> getPedidosMesa(){
+		try {
+			pedidos = FactoryDao.getInstance().getMesaOcupacaoDao().getPedidosMesa(idOcupacao);
+		} catch (Exception e) {
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao recuperar pedidos da mesa.");  
+			FacesContext.getCurrentInstance().addMessage(null, message);
+			LoggerApp.error("Erro ao recuperar pedidos da mesa." , e);
+		}
+		
+		return pedidos;
+	}
+	
+	public double getTotalPedidos(){
+		if (pedidos == null){
+			return 0;
+		}
+		double total = 0;
+		for (ItemPedidoDTO pedido: pedidos) {
+			total += pedido.getValorPedido();
+		}
+		return total;
+	}
 }

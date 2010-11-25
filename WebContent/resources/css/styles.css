@@ -1,21 +1,3 @@
-.table{
-	border:thin solid black;
-}
-
-.header{
-	text-align:center;
-	font-style:italic;
-	color:Snow;
-	background:Teal;
-}
-
-.oddRow{
-	height:25px;
-	text-align:center;
-	background:MediumTurquoise;
-}
-
-.evenRow{
-	text-align:center;
-	background:PowderBlue;
+.ui-panel-titlebar ui-widget-header ui-corner-all {
+	background-color:red;
 }

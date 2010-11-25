@@ -14,6 +14,7 @@ import com.futurebeer.entity.Mesa;
 import com.futurebeer.entity.MesaOcupacao;
 import com.futurebeer.entity.PersistenceManager;
 import com.futurebeer.exception.BaseException;
+import com.futurebeer.util.StatusMesa;
 
 public class MesaDao implements IMesaDao{
 
@@ -31,7 +32,12 @@ public class MesaDao implements IMesaDao{
 			for (Mesa item : lista) {
 				MesaDTO mesa = new MesaDTO();
 				mesa.setNumero(item.getNumero());
-				mesa.setStatus(item.getStatus());
+				mesa.setStatus(item.getStatus().ordinal());
+				
+				switch (item.getStatus()){
+					case LIVRE:   mesa.setCor("green");break;
+					case OCUPADA: mesa.setCor("red");break;
+				}
 				
 				List<MesaOcupacao> ocupacoes = item.getOcupacoes();
 				
