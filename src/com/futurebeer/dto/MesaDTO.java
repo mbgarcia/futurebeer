@@ -9,6 +9,8 @@ public class MesaDTO implements Serializable{
 	private String numero;
 	
 	private int status;
+
+	private boolean ocupada;
 	
 	private int idOcupacao;
 	
@@ -34,6 +36,14 @@ public class MesaDTO implements Serializable{
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	
+	public boolean isOcupada() {
+		return ocupada;
+	}
+
+	public void setOcupada(boolean ocupada) {
+		this.ocupada = ocupada;
 	}
 
 	public int getIdOcupacao() {

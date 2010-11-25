@@ -45,5 +45,12 @@ public class MesaBean implements Serializable{
 	public void setSelectedMesa(MesaDTO selectedMesa) {
 		this.selectedMesa = selectedMesa;
 	}
+	
+	public String abrirMesa(){
+		return null;
+	}
 
+	public String fecharMesa(){
+		return null;
+	}
 }

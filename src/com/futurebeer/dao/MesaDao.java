@@ -35,8 +35,16 @@ public class MesaDao implements IMesaDao{
 				mesa.setStatus(item.getStatus().ordinal());
 				
 				switch (item.getStatus()){
-					case LIVRE:   mesa.setCor("green");break;
-					case OCUPADA: mesa.setCor("red");break;
+					case LIVRE:{   
+						mesa.setCor("green");
+						mesa.setOcupada(false);
+						break;
+					}
+					case OCUPADA: {
+						mesa.setCor("red");
+						mesa.setOcupada(true);
+						break;
+					}
 				}
 				
 				List<MesaOcupacao> ocupacoes = item.getOcupacoes();
@@ -56,8 +64,22 @@ public class MesaDao implements IMesaDao{
 
 		return mesas;
 	}
-	
-//	public MesaOcupacao getOcupacaoMesa(int idMesa){
-//		
-//	}
+
+	public void abrirMesa(MesaDTO mesa) throws BaseException {
+		EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
+		EntityManager em = null;
+		try {
+			em = emf.createEntityManager();
+			MesaOcupacao ocupacao = new MesaOcupacao();
+			em.getTransaction().begin();
+			Session session = (Session)em.getDelegate();
+		} catch (Exception e) {
+			throw new BaseException("Erro ao recuperar mesas.", e);
+		}finally{
+			em.close();
+		}
+	}
+
+	public void fecharMesa(MesaDTO mesa) throws BaseException {
+	}	
 }

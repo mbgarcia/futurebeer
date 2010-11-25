@@ -22,15 +22,23 @@
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
 				<p:column>
 					<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center">
-						<p:commandLink update="pedidosDialog, inputQtdade, itensTable" oncomplete="pedidosDialog.show()" title="Ver Pedidos" >  
+						<p:commandLink title="Abrir mesa" disabled="#{mesa.ocupada}" ajax="false" action="#{mesaBean.abrirMesa}">  
+	                       	<p:graphicImage value="/resources/images/open.png"/>
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
+	                   	</p:commandLink>
+						<p:commandLink update="pedidosDialog, inputQtdade, itensTable" disabled="#{! mesa.ocupada}" oncomplete="pedidosDialog.show()" title="Ver Pedidos" >  
 	                       	<p:graphicImage value="/resources/images/menu.png"/>
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
 	                       	<f:setPropertyActionListener value="#{mesa.idOcupacao}"	target="#{pedidoBean.idOcupacao}" />
 	                   	</p:commandLink>
-						<p:commandLink update="tablePedidoResumo" oncomplete="pedidosResumoDialog.show()" title="Ver Pedidos" >  
-	                       	<p:graphicImage value="/resources/images/search.png"/>
+						<p:commandLink update="tablePedidoResumo" disabled="#{! mesa.ocupada}" oncomplete="pedidosResumoDialog.show()" title="Ver Pedidos" >  
+	                       	<p:graphicImage value="/resources/images/search.png" />
 	                       	<f:setPropertyActionListener value="#{mesa.idOcupacao}"	target="#{pedidoBean.idOcupacao}" />
 	                   	</p:commandLink>
+						<p:commandLink title="Fechar mesa" disabled="#{! mesa.ocupada}" ajax="false" action="#{mesaBean.fecharMesa}">  
+	                       	<p:graphicImage value="/resources/images/close.png"/>
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
+	                   	</p:commandLink>	                   	
 					</p:panel>
 				</p:column>
 			</p:dataGrid>
