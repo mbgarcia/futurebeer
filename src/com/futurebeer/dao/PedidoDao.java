@@ -54,8 +54,8 @@ public class PedidoDao implements IPedidoDao{
 			
 			em.persist(pedido);
 			em.getTransaction().commit();
+
 			LoggerApp.debug("Pedido adicionado!!!!");
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerApp.error("Erro ao inserir pedido", e);

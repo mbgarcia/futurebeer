@@ -37,4 +37,8 @@ public class ProdutoBean implements Serializable{
 	public Collection<ProdutoDTO> getProdutos(){
 		return map.values();
 	}
+	
+	public String initCadastro(){
+		return "cadProdutos";
+	}
 }

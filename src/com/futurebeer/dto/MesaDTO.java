@@ -6,12 +6,14 @@ import java.util.Date;
 public class MesaDTO implements Serializable{
 	private static final long serialVersionUID = -2971076177028793158L;
 	
+	private int idMesa;
+
 	private String numero;
 	
 	private int status;
 
 	private boolean ocupada;
-	
+
 	private int idOcupacao;
 	
 	private Date abertura;
@@ -21,6 +23,14 @@ public class MesaDTO implements Serializable{
 	private String cor;
 	
 	public MesaDTO() {}
+
+	public int getIdMesa() {
+		return idMesa;
+	}
+
+	public void setIdMesa(int idMesa) {
+		this.idMesa = idMesa;
+	}
 
 	public String getNumero() {
 		return numero;

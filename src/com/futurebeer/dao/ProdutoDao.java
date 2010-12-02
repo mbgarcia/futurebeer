@@ -5,8 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-
-import org.hibernate.Session;
+import javax.persistence.Query;
 
 import com.futurebeer.dao.interfaces.IProdutoDao;
 import com.futurebeer.dto.ProdutoDTO;
@@ -24,9 +23,7 @@ public class ProdutoDao implements IProdutoDao {
 		try {
 			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 			em = emf.createEntityManager();
-			em.getTransaction().begin();
 			produto = em.find(Produto.class, idProduto);
-			em.getTransaction().commit();
 		} catch (Exception e) {
 			throw new BaseException("Erro ao recuperar produto pelo id: " + idProduto, e);
 		}finally{
@@ -38,13 +35,15 @@ public class ProdutoDao implements IProdutoDao {
 	
 	public List<ProdutoDTO> getProdutos() throws BaseException{
 		EntityManager em = null;
+//		Session session = null;
 		List<ProdutoDTO> produtos = null;
 		try {
 			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 			em = emf.createEntityManager();
-			em.getTransaction().begin();
-			Session session = (Session)em.getDelegate();
-			List<Produto> lista = session.createCriteria(Produto.class).list();
+			//session = (Session)em.getDelegate();
+			//List<Produto> lista = session.createCriteria(Produto.class).list();
+			Query query = em.createQuery("select produto from Produto produto", Produto.class);
+			List<Produto> lista = query.getResultList();
 			
 			produtos = new LinkedList<ProdutoDTO>();
 			for (Produto item : lista) {
@@ -54,10 +53,10 @@ public class ProdutoDao implements IProdutoDao {
 			
 				produtos.add(produto);
 			}
-			em.getTransaction().commit();
 		} catch (Exception e) {
 			throw new BaseException("Erro ao listar produtos.", e);
 		}finally{
+//			session.close();
 			em.close();
 		}
 		

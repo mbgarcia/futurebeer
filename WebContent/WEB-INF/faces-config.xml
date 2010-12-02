@@ -24,4 +24,12 @@ But, additional configuration parameters can be placed in a file WEB-INF/facesco
 			<default-locale>en</default-locale>
 		</locale-config>
 	</application>
+	
+	<navigation-rule> 
+   		<navigation-case> 
+      		<from-outcome>cadProdutos</from-outcome> 
+      		<to-view-id>/cad_produtos.xhtml</to-view-id> 
+   		</navigation-case> 
+	</navigation-rule> 
+	
 </faces-config>

@@ -9,6 +9,7 @@ import javax.faces.bean.SessionScoped;
 import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.exception.BaseException;
+import com.futurebeer.util.LoggerApp;
 
 @ManagedBean(name="mesaBean")
 @SessionScoped
@@ -37,6 +38,10 @@ public class MesaBean implements Serializable{
 		
 		return mesas;
 	}
+	
+	public void setMesas(List<MesaDTO> mesas) {
+		this.mesas = mesas;
+	}
 
 	public MesaDTO getSelectedMesa() {
 		return selectedMesa;
@@ -47,10 +52,54 @@ public class MesaBean implements Serializable{
 	}
 	
 	public String abrirMesa(){
+		try {
+			List<MesaDTO> lista = FactoryDao.getInstance().getMesaDao().abrirMesa(getSelectedMesa()); 
+			setMesas(lista);
+		} catch (BaseException e) {
+			LoggerApp.error("Erro ao abrir mesa", e);
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	public String fecharMesa(){
+		try {
+			List<MesaDTO> lista = FactoryDao.getInstance().getMesaDao().fecharMesa(getSelectedMesa()); 
+			setMesas(lista);
+		} catch (BaseException e) {
+			LoggerApp.error("Erro ao fechar mesa", e);
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private String teste;
+	private MesaDTO testeMesa;
+
+	public String getTeste() {
+		return teste;
+	}
+
+	public void setTeste(String teste) {
+		this.teste = teste;
+	}
+
+	public MesaDTO getTesteMesa() {
+		return testeMesa;
+	}
+
+	public void setTesteMesa(MesaDTO testeMesa) {
+		this.testeMesa = testeMesa;
+	}
+	
+	public String testeMetodo(){
+		System.out.println("testeMetodo");
+		return null;
+	}
+	
+	public String testeMetodo02(){
+		System.out.println("testeMetodo02");
 		return null;
 	}
 }

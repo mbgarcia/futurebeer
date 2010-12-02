@@ -29,9 +29,7 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 		try {
 			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 			em = emf.createEntityManager();
-			em.getTransaction().begin();
 			ocupacao = em.find(MesaOcupacao.class, id);
-			em.getTransaction().commit();
 		} catch (Exception e) {
 			throw new BaseException("Erro ao recuperar mesaOcupacao pelo id :" + id, e);
 		}finally{
@@ -54,7 +52,6 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 		try {
 			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 			em = emf.createEntityManager();
-			em.getTransaction().begin();
 			MesaOcupacao ocupacao = em.find(MesaOcupacao.class, idOcupacao);
 
 			if (ocupacao == null){
@@ -75,7 +72,6 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 					pedidosDTO.add(itemDTO);
 				}
 			}
-			em.getTransaction().commit();
 		} catch (Exception e) {
 			throw new BaseException("Erro ao recuperar pedidos da mesa : " + idOcupacao, e);
 		}finally{

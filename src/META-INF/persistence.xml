@@ -7,6 +7,8 @@
 		<properties>
 			<property name="hibernate.connection.datasource" value="java:comp/env/jdbc/futurebeer"/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.connection.autocommit" value="false" />
+			<property name="hibernate.connection.release_mode" value="after_transaction" />
 		</properties>
 	</persistence-unit>	
 </persistence>
