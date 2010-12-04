@@ -1,12 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.prime.com.tr/ui">
 <h:head>
-	<title>Welcome</title>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/styles.css"/>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/hot-sneaks/skin.css"/>  
+	<title>
+		<h:outputText value="#{msgs.title_cad_produtos}"/> 
+	</title>
 </h:head>
+
 <h:body>
-	<h3>Welcome to JavaServer Faces!</h3>
+	<f:view contentType="text/html">
+	<h:form>
+		<p:commandButton action="#{mesaBean.abrirDashboard}" value="#{msgs.btn_mesas}" ajax="false"/>
+		<p:layout fullPage="false" style="width:800px; height: 600px">
+			<p:layoutUnit position="left" width="400" header="#{msgs.title_cad_produtos}" resizable="false" closable="false" collapsible="false">  
+				<h:panelGrid columns="2" id="panelCadastro">
+					<h:inputHidden value="#{cadProdutoBean.id}"/>
+					<br/>
+					<h:outputLabel for="descricao" value="#{msgs.produto_descricao}"/>
+					<h:inputText id="descricao" value="#{cadProdutoBean.descricao}"/>
+					<h:outputLabel for="tipo" value="#{msgs.produto_tipo}" />
+					<h:selectOneMenu id="tipo" value="#{cadProdutoBean.tipo}" style="width:150px">
+						<f:selectItems value="#{cadProdutoBean.tiposProdutos}" var="t" itemLabel="#{t.descricao}" itemValue="#{t.idTipo}" />
+					</h:selectOneMenu>
+					<h:outputLabel for="valor" value="#{msgs.produto_valor}" />
+					<h:inputText id="valor" value="#{cadProdutoBean.valor}"/>
+					<br/>
+					<p:commandButton action="#{cadProdutoBean.addProduto}" value="#{msgs.btn_cadastrar}" update="tableProdutos" ajax="false"/>
+				</h:panelGrid>
+			</p:layoutUnit> 
+			<p:layoutUnit position="center" header="#{msgs.produtos_label}">
+				<p:dataTable var="item" id="tableProdutos" value="#{cadProdutoBean.produtosCadastrados}" paginator="true" rows="8"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+					<p:column width="100">
+						<f:facet name="header">
+							#{msgs.produto_tipo}
+						</f:facet>
+						#{item.tipo.descricao}
+					</p:column>
+					<p:column width="200">
+						<f:facet name="header">
+							#{msgs.produto_descricao}
+						</f:facet>
+						#{item.descricao}
+					</p:column>
+					<p:column width="100">
+						<f:facet name="header">
+							#{msgs.produto_valor}
+						</f:facet>
+						#{item.valor}
+					</p:column>
+					
+					<p:column style="width:32px">
+            			<p:commandButton action="#{cadProdutoBean.editProduto}"  image="ui-icon ui-icon-search" ajax="false">  
+							<f:setPropertyActionListener value="#{item}" target="#{cadProdutoBean.selectedProduto}" />
+                		</p:commandButton>  
+                	</p:column>
+				</p:dataTable>
+			</p:layoutUnit>
+		</p:layout>
+	</h:form>
+	</f:view>
 </h:body>
 </html>

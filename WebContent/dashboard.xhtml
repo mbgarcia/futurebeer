@@ -16,6 +16,7 @@
 </h:head>
 
 <h:body>
+	<f:view contentType="text/html">
 	<h:form>
 		<p:commandButton action="#{produtoBean.initCadastro}" value="#{msgs.btn_cadastro_produtos}" ajax="false"/>
 		
@@ -114,5 +115,6 @@
 			</p:outputPanel>
 		</p:dialog>			
 	</h:form>
+	</f:view>
 </h:body>
 </html>

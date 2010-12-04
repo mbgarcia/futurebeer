@@ -74,32 +74,7 @@ public class MesaBean implements Serializable{
 		return null;
 	}
 	
-	private String teste;
-	private MesaDTO testeMesa;
-
-	public String getTeste() {
-		return teste;
-	}
-
-	public void setTeste(String teste) {
-		this.teste = teste;
-	}
-
-	public MesaDTO getTesteMesa() {
-		return testeMesa;
-	}
-
-	public void setTesteMesa(MesaDTO testeMesa) {
-		this.testeMesa = testeMesa;
-	}
-	
-	public String testeMetodo(){
-		System.out.println("testeMetodo");
-		return null;
-	}
-	
-	public String testeMetodo02(){
-		System.out.println("testeMetodo02");
-		return null;
+	public String abrirDashboard(){
+		return "dashboard";
 	}
 }

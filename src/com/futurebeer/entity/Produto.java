@@ -64,4 +64,8 @@ public class Produto implements Serializable{
 	public void setTipo(TipoProduto tipo) {
 		this.tipo = tipo;
 	}
+	
+	public String toString() {
+		return "[" + "id: " + this.getId() + " , descricao: " + this.getDescricao() + " , tipo: " + this.getTipo() + " , valor: " + this.getValor() + "]";
+	}
 }

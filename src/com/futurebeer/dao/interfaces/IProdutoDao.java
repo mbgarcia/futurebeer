@@ -10,4 +10,8 @@ public interface IProdutoDao {
 	public Produto findById(Integer idProduto) throws BaseException;
 	
 	public List<ProdutoDTO> getProdutos() throws BaseException;
+	
+	public Produto cadastrarProduto(ProdutoDTO produtoDTO) throws BaseException;
+	
+	public Produto atualizarProduto(ProdutoDTO produtoDTO) throws BaseException;
 }

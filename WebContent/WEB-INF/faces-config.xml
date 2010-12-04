@@ -31,5 +31,12 @@ But, additional configuration parameters can be placed in a file WEB-INF/facesco
       		<to-view-id>/cad_produtos.xhtml</to-view-id> 
    		</navigation-case> 
 	</navigation-rule> 
+
+	<navigation-rule> 
+   		<navigation-case> 
+      		<from-outcome>dashboard</from-outcome> 
+      		<to-view-id>/dashboard.xhtml</to-view-id> 
+   		</navigation-case> 
+	</navigation-rule> 
 	
 </faces-config>

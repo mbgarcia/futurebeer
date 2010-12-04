@@ -7,8 +7,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.hibernate.Session;
-
 import com.futurebeer.dao.interfaces.IMesaDao;
 import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.entity.ItemPedido;
