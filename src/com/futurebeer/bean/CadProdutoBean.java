@@ -101,7 +101,7 @@ public class CadProdutoBean implements Serializable{
 					produto.setTipo(tipoProduto);
 				}
 			}
-			if (this.getId() == null){
+			if (this.getId() == null || this.getId() == 0){
 				FactoryDao.getInstance().getProdutoDao().cadastrarProduto(produto);
 			}else{
 				FactoryDao.getInstance().getProdutoDao().atualizarProduto(produto);

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.prime.com.tr/ui">
+
+<h:head>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/styles.css"/>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/hot-sneaks/skin.css"/>  
+	<title>
+		<h:outputText value="#{msgs.windowTitle}"/> 
+	</title>
+</h:head>
+
+<h:body>
+	<f:view contentType="text/html">
+		<h:form prependId="false">
+			<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="25" paginator="true" effect="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+				<p:column>
+					<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center">
+						<p:commandLink update="pedidosDialog, inputQtdade, itensTable" oncomplete="pedidosDialog.show()" title="Ver Pedidos" >  
+	                       	<p:graphicImage value="/resources/images/menu.png"/>
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
+	                       	<f:setPropertyActionListener value="#{mesa.idOcupacao}"	target="#{pedidoBean.idOcupacao}" />
+	                   	</p:commandLink>
+						<p:commandLink update="tablePedidoResumo" oncomplete="pedidosResumoDialog.show()" title="Ver Pedidos" >  
+	                       	<p:graphicImage value="/resources/images/search.png"/>
+	                       	<f:setPropertyActionListener value="#{mesa.idOcupacao}"	target="#{pedidoBean.idOcupacao}" />
+	                   	</p:commandLink>
+					</p:panel>
+				</p:column>
+			</p:dataGrid>
+
+			<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosDialog" width="600" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputPanel id="pedidosDetail" style="text-align:left;">
+					<p>
+						<h:outputLabel for="listaProduto" value="#{msgs.produtos_label}" />
+						<br/>
+						<h:selectOneListbox id="listaProduto" value="#{pedidoBean.idProduto}" size="10" style="width:100%">
+							<f:selectItems value="#{produtoBean.produtos}" var="p" itemLabel="#{p.descricao}" itemValue="#{p.idProduto}"/>
+						</h:selectOneListbox>
+					</p>
+					<p>
+						<h:outputLabel for="inputQtdade" value="#{msgs.qtdade_label}" />
+						<h:inputText id="inputQtdade" value="#{pedidoBean.qtdade}"/>
+						<p:commandButton actionListener="#{pedidoBean.addItem}" value="#{msgs.btn_add_item}" update="itensTable, inputQtdade"/>
+					</p>
+					<p:dataTable var="item" value="#{pedidoBean.itens}" id="itensTable">
+						<p:column width="300">
+							<f:facet name="header">
+								#{msgs.produto_label}
+							</f:facet>
+							<h:outputText value="#{item.descricao}"/>
+						</p:column>
+						<p:column width="40">
+							<f:facet name="header">
+								#{msgs.qtdade_label}
+							</f:facet>
+							<h:outputText value="#{item.qtdade}"/>
+						</p:column>
+					</p:dataTable>
+					<p:commandButton actionListener="#{pedidoBean.cancelaPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_cancelar_pedido}"/>
+					<p:commandButton actionListener="#{pedidoBean.concluirPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_concluir_pedido}"/>
+				</p:outputPanel>
+			</p:dialog>
+
+			<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosResumoDialog" width="800" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+				<p:outputPanel id="pedidosResumoDetail" style="text-align:left;">
+					<p:dataTable var="item" value="#{pedidoBean.pedidosMesa}" id="tablePedidoResumo">
+						<f:facet name="header">
+							Resumo dos pedidos
+						</f:facet>  
+
+						<p:columnGroup type="header">
+							<p:row>
+								<p:column headerText="#{msgs.produto_label}"/>
+								<p:column headerText="#{msgs.qtdade_label}"/>
+								<p:column headerText="#{msgs.valor_label}"/>
+							</p:row>
+						</p:columnGroup>
+
+						<p:column width="300">
+							#{item.descricao}
+						</p:column>
+						<p:column width="20">
+							#{item.qtdade}
+						</p:column>
+						<p:column width="40">
+							#{item.valorPedido}
+						</p:column>
+
+						<p:columnGroup type="footer">
+							<p:row>
+							 	<p:column colspan="2" footerText="Total:" style="text-align:right"  />
+								<p:column footerText="#{pedidoBean.totalPedidos}"/>
+							</p:row>
+						</p:columnGroup>
+					</p:dataTable>
+					<p:commandButton oncomplete="pedidosResumoDialog.hide()" value="#{msgs.btn_fechar_pedido}"/>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</f:view>
+	</h:body>
+</html>

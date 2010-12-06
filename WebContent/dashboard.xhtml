@@ -17,10 +17,11 @@
 
 <h:body>
 	<f:view contentType="text/html">
-	<h:form>
+	<h:form prependId="false">
 		<p:commandButton action="#{produtoBean.initCadastro}" value="#{msgs.btn_cadastro_produtos}" ajax="false"/>
 		
-		<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="25" paginator="false">
+		<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="25" paginator="true" effect="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">		
 			<p:column>
 				<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center;">
 					<h:panelGrid columns="4">
@@ -31,11 +32,11 @@
 						<p:commandLink update="pedidosDialog, inputQtdade, itensTable" disabled="#{! mesa.ocupada}" oncomplete="pedidosDialog.show()" title="#{msgs.btn_fazer_pedido}">  
 	                       	<p:graphicImage value="/resources/images/menu_#{mesa.ocupada}.png"/>
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
-	                       	<f:setPropertyActionListener value="#{mesa.idOcupacao}"	target="#{pedidoBean.idOcupacao}" />
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{pedidoBean.selectedMesa}" />
 	                   	</p:commandLink>
 						<p:commandLink update="tablePedidoResumo" disabled="#{! mesa.ocupada}" oncomplete="pedidosResumoDialog.show()" title="#{msgs.btn_ver_pedidos_mesa}">  
 	                       	<p:graphicImage value="/resources/images/search_#{mesa.ocupada}.png" />
-	                       	<f:setPropertyActionListener value="#{mesa.idOcupacao}"	target="#{pedidoBean.idOcupacao}" />
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{pedidoBean.selectedMesa}" />
 	                   	</p:commandLink>
 						<h:commandLink title="#{msgs.btn_fechar_mesa}" disabled="#{! mesa.ocupada}" action="#{mesaBean.fecharMesa}">
 	                       	<h:graphicImage library="images" name="close_#{mesa.ocupada}.png"/>

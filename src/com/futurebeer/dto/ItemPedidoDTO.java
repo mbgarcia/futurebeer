@@ -2,12 +2,16 @@ package com.futurebeer.dto;
 
 import java.io.Serializable;
 
+import com.futurebeer.util.TipoProduto;
+
 public class ItemPedidoDTO implements Serializable{
 	private static final long serialVersionUID = 3580443685613565340L;
 	
 	private int idProduto;
 	
 	private String descricao;
+	
+	private TipoProduto tipoProduto;
 	
 	private int qtdade;
 	
@@ -30,6 +34,14 @@ public class ItemPedidoDTO implements Serializable{
 
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+
+	public TipoProduto getTipoProduto() {
+		return tipoProduto;
+	}
+
+	public void setTipoProduto(TipoProduto tipoProduto) {
+		this.tipoProduto = tipoProduto;
 	}
 
 	public int getQtdade() {

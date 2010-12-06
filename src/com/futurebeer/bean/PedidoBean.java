@@ -3,24 +3,30 @@ package com.futurebeer.bean;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
 import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.ItemPedidoDTO;
+import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.dto.PedidoDTO;
+import com.futurebeer.entity.Produto;
 import com.futurebeer.exception.BaseException;
+import com.futurebeer.util.JasperUtil;
 import com.futurebeer.util.LoggerApp;
+import com.futurebeer.util.TipoProduto;
 
 @ManagedBean(name="pedidoBean")
 @SessionScoped
 public class PedidoBean implements Serializable{
 	private static final long serialVersionUID = 7708544055015828412L;
 	
-	private int idOcupacao;
+	private MesaDTO selectedMesa;
 
 	private int idProduto;
 	
@@ -30,12 +36,12 @@ public class PedidoBean implements Serializable{
 	
 	private List<ItemPedidoDTO> itens = new ArrayList<ItemPedidoDTO>();
 	
-	public int getIdOcupacao() {
-		return idOcupacao;
+	public MesaDTO getSelectedMesa() {
+		return selectedMesa;
 	}
 
-	public void setIdOcupacao(int idOcupacao) {
-		this.idOcupacao = idOcupacao;
+	public void setSelectedMesa(MesaDTO selectedMesa) {
+		this.selectedMesa = selectedMesa;
 	}
 
 	public int getIdProduto() {
@@ -80,10 +86,13 @@ public class PedidoBean implements Serializable{
 		}
 		
 		try {
-			String descricao = FactoryDao.getInstance().getProdutoDao().findById(getIdProduto()).getDescricao();
+			Produto produto = FactoryDao.getInstance().getProdutoDao().findById(getIdProduto());
+			String descricao = produto.getDescricao();
+			TipoProduto tipoProduto = produto.getTipo();
 			ItemPedidoDTO item = new ItemPedidoDTO();
 			item.setIdProduto(getIdProduto());
 			item.setDescricao(descricao);
+			item.setTipoProduto(tipoProduto);
 			item.setQtdade(getQtdade());
 			
 			itens.add(item);
@@ -101,20 +110,20 @@ public class PedidoBean implements Serializable{
 	public void concluirPedido(){
 		try {
 			PedidoDTO dto = new PedidoDTO();
-			dto.setIdOcupacao(getIdOcupacao());
+			dto.setIdOcupacao(getSelectedMesa().getIdOcupacao());
 			List<ItemPedidoDTO> novosItens = new ArrayList<ItemPedidoDTO>();
 			for (ItemPedidoDTO itemDTO : getItens()) {
 				ItemPedidoDTO novoItem = new ItemPedidoDTO();
+				novoItem.setDescricao(itemDTO.getDescricao());
 				novoItem.setIdProduto(itemDTO.getIdProduto());
 				novoItem.setQtdade(itemDTO.getQtdade());
+				novoItem.setTipoProduto(itemDTO.getTipoProduto());
 				novosItens.add(novoItem);
 			}
 			dto.setItens(novosItens);
 			FactoryDao.getInstance().getPedidoDao().addPedido(dto);
-			
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Mensagem",  "Pedido realizado.");  
-	          
-	        FacesContext.getCurrentInstance().addMessage(null, message);  
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Mensagem",  "Pedido realizado.");
+			JasperUtil.getInstance().gerarRelatorio(FacesContext.getCurrentInstance(), novosItens, getSelectedMesa().getNumero());
 		} catch (BaseException e) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao processar pedido.");  
 			
@@ -138,7 +147,9 @@ public class PedidoBean implements Serializable{
 
 	public List<ItemPedidoDTO> getPedidosMesa(){
 		try {
-			pedidos = FactoryDao.getInstance().getMesaOcupacaoDao().getPedidosMesa(idOcupacao);
+			if (getSelectedMesa() != null){
+				pedidos = FactoryDao.getInstance().getMesaOcupacaoDao().getPedidosMesa(getSelectedMesa().getIdOcupacao());
+			}
 		} catch (Exception e) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao recuperar pedidos da mesa.");  
 			FacesContext.getCurrentInstance().addMessage(null, message);
