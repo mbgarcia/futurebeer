@@ -16,6 +16,8 @@ But, additional configuration parameters can be placed in a file WEB-INF/facesco
         
         From JSF 2.0 tutorial at http://www.coreservlets.com/JSF-Tutorial/jsf2/ -->
 	<application>
+		<!-- The bundle referenced by the message-bundle tag is used for messages produced by the application.  -->
+		<message-bundle>com.futurebeer.application_messages</message-bundle>
 		<resource-bundle>
 			<base-name>com.futurebeer.messages</base-name>
 			<var>msgs</var>

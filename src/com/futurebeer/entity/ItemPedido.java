@@ -2,6 +2,7 @@ package com.futurebeer.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,11 +25,12 @@ public class ItemPedido implements Serializable{
 	@Column(name="qtdade", nullable=false)
 	private Integer qtdade;
 	
-	@ManyToOne(optional=false)
+	@ManyToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="pedido_id", referencedColumnName="pedido_id")
 	private Pedido pedido;
 	
-	@ManyToOne(optional=false)
+	//Remover um produto tambem remove os pedidos
+	@ManyToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="produto_id", referencedColumnName="produto_id")
 	private Produto produto;
 

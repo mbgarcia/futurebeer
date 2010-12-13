@@ -27,11 +27,14 @@ public class Produto implements Serializable{
 	private String descricao;
 	
 	@Column(name="valor")
-	private double valor;
+	private Double valor;
 	
 	@Column(name="tipo")
 	@Enumerated(EnumType.ORDINAL)
 	private TipoProduto tipo;
+	
+	@Column(name="ativo")
+	private Integer ativo;
 
 	public Integer getId() {
 		return id;
@@ -49,11 +52,11 @@ public class Produto implements Serializable{
 		this.descricao = descricao;
 	}
 
-	public double getValor() {
+	public Double getValor() {
 		return valor;
 	}
 
-	public void setValor(double valor) {
+	public void setValor(Double valor) {
 		this.valor = valor;
 	}
 
@@ -65,6 +68,14 @@ public class Produto implements Serializable{
 		this.tipo = tipo;
 	}
 	
+	public Integer getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Integer ativo) {
+		this.ativo = ativo;
+	}
+
 	public String toString() {
 		return "[" + "id: " + this.getId() + " , descricao: " + this.getDescricao() + " , tipo: " + this.getTipo() + " , valor: " + this.getValor() + "]";
 	}

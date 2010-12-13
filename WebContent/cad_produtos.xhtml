@@ -17,56 +17,98 @@
 
 <h:body>
 	<f:view contentType="text/html">
-	<h:form>
-		<p:commandButton action="#{mesaBean.abrirDashboard}" value="#{msgs.btn_mesas}" ajax="false"/>
-		<p:layout fullPage="false" style="width:800px; height: 600px">
-			<p:layoutUnit position="left" width="400" header="#{msgs.title_cad_produtos}" resizable="false" closable="false" collapsible="false">  
-				<h:panelGrid columns="2" id="panelCadastro">
-					<h:inputHidden value="#{cadProdutoBean.id}"/>
-					<br/>
-					<h:outputLabel for="descricao" value="#{msgs.produto_descricao}"/>
-					<h:inputText id="descricao" value="#{cadProdutoBean.descricao}"/>
-					<h:outputLabel for="tipo" value="#{msgs.produto_tipo}" />
-					<h:selectOneMenu id="tipo" value="#{cadProdutoBean.tipo}" style="width:150px">
-						<f:selectItems value="#{cadProdutoBean.tiposProdutos}" var="t" itemLabel="#{t.descricao}" itemValue="#{t.idTipo}" />
-					</h:selectOneMenu>
-					<h:outputLabel for="valor" value="#{msgs.produto_valor}" />
-					<h:inputText id="valor" value="#{cadProdutoBean.valor}"/>
-					<br/>
-					<p:commandButton action="#{cadProdutoBean.addProduto}" value="#{msgs.btn_cadastrar}" update="tableProdutos" ajax="false"/>
-				</h:panelGrid>
-			</p:layoutUnit> 
+	<h:form prependId="false">
+		<h:inputHidden id="campoId" value="#{cadProdutoBean.id}"/>
+		<p:growl id="messages" showDetail="true" showSummary="false" life="2000"/>
+		<p:commandButton action="#{mesaBean.abrirDashboard}" value="#{msgs.btn_mesas}" ajax="false" immediate="true"/>
+		<p:commandButton image="ui-icon ui-icon-plusthick" oncomplete="cadProdutosDialog.show()" value="#{msgs.btn_novo_produto}" action="#{cadProdutoBean.novoProduto}" update="panelCadastro"/>
+		
+	
+		<p:layout fullPage="false" style="width:900px; height: 600px">
 			<p:layoutUnit position="center" header="#{msgs.produtos_label}">
-				<p:dataTable var="item" id="tableProdutos" value="#{cadProdutoBean.produtosCadastrados}" paginator="true" rows="8"
-					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
-					<p:column width="100">
-						<f:facet name="header">
-							#{msgs.produto_tipo}
-						</f:facet>
-						#{item.tipo.descricao}
-					</p:column>
-					<p:column width="200">
-						<f:facet name="header">
-							#{msgs.produto_descricao}
-						</f:facet>
-						#{item.descricao}
-					</p:column>
-					<p:column width="100">
-						<f:facet name="header">
-							#{msgs.produto_valor}
-						</f:facet>
-						#{item.valor}
-					</p:column>
-					
-					<p:column style="width:32px">
-            			<p:commandButton action="#{cadProdutoBean.editProduto}"  image="ui-icon ui-icon-search" ajax="false">  
-							<f:setPropertyActionListener value="#{item}" target="#{cadProdutoBean.selectedProduto}" />
-                		</p:commandButton>  
-                	</p:column>
-				</p:dataTable>
+					<p:dataTable var="item" id="tableProdutos" value="#{cadProdutoBean.produtosCadastrados}" paginator="true" rows="8"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+						<p:column width="100">
+							<f:facet name="header">
+								#{msgs.produto_tipo}
+							</f:facet>
+							#{item.tipo.descricao}
+						</p:column>
+						<p:column width="200">
+							<f:facet name="header">
+								#{msgs.produto_descricao}
+							</f:facet>
+							#{item.descricao}
+						</p:column>
+						<p:column width="100">
+							<f:facet name="header">
+								#{msgs.produto_valor}
+							</f:facet>
+							#{item.valor}
+						</p:column>
+						
+						<p:column style="width:32px">
+		           			<p:commandButton image="ui-icon ui-icon-search" oncomplete="cadProdutosDialog.show()" update="panelCadastro">  
+								<f:setPropertyActionListener value="#{item}" target="#{cadProdutoBean.selectedProduto}" />
+		               		</p:commandButton>  
+		               	</p:column>
+		
+						<p:column style="width:32px">
+		           			<p:commandButton image="ui-icon ui-icon-trash" oncomplete="confirmDialog.show()" update="campoId">
+								<f:setPropertyActionListener value="#{item}" target="#{cadProdutoBean.selectedProduto}" />
+							</p:commandButton>
+		               	</p:column>
+					</p:dataTable>
 			</p:layoutUnit>
 		</p:layout>
+
+		<p:confirmDialog id="confirmDialog" message="#{msgs.msg_del_produto}" header="#{msgs.title_msg_del_produto}" severity="alert" widgetVar="confirmDialog" width="400" closable="false">
+			<p:commandButton value="#{msgs.btn_confirmar}" action="#{cadProdutoBean.deleteProduto}" ajax="false" oncomplete="confirmDialog.hide()"/>
+			<p:commandButton value="#{msgs.btn_cancelar}" onclick="confirmDialog.hide();" />
+		</p:confirmDialog>
 	</h:form>
+	
+	<p:dialog header="#{msgs.title_cad_produtos}" widgetVar="cadProdutosDialog" width="600" modal="true" resizable="false" closable="false" hideEffect="clip">
+		<h:form prependId="false">			
+			<h:panelGrid columns="3" id="panelCadastro">
+				<h:column>
+					<h:inputHidden id="id" value="#{cadProdutoBean.id}"/>
+				</h:column>
+				<h:column />
+				<h:column />
+				
+				<h:outputLabel for="descricao" value="#{msgs.produto_descricao}"/>
+				<h:inputText id="descricao" value="#{cadProdutoBean.descricao}" required="true" requiredMessage="#{msgs.required_produto_descricao}" validatorMessage="#{msgs.invalid_produto_descricao}">
+					<f:validateLength minimum="2"/> 
+					<f:validateLength maximum="30"/> 
+				</h:inputText>
+				<h:message for="descricao" errorClass="errors"/>
+				
+				<h:outputLabel for="tipo" value="#{msgs.produto_tipo}" />
+				<h:selectOneMenu id="tipo" value="#{cadProdutoBean.tipo}" style="width:150px">
+					<f:selectItems value="#{cadProdutoBean.tiposProdutos}" var="t" itemLabel="#{t.descricao}" itemValue="#{t.idTipo}" />
+				</h:selectOneMenu>
+				<h:column />
+				
+				<h:outputLabel for="valor" value="#{msgs.produto_valor}" />
+				<h:inputText id="valor" value="#{cadProdutoBean.valor}" required="true" requiredMessage="#{msgs.required_produto_valor}" validatorMessage="#{msgs.invalid_produto_valor}">
+					<f:validateDoubleRange minimum="0"/>
+					<f:validateDoubleRange maximum="99999.99"/>
+				</h:inputText>
+				<h:message for="valor" errorClass="errors" showDetail="false" showSummary="true"/>
+				
+				<p:commandButton action="#{cadProdutoBean.addProduto}" value="#{msgs.btn_cadastrar}" update="panelCadastro, tableProdutos, messages" oncomplete="handleCadastroRequest(xhr, status, args)"/>
+				<p:commandButton value="#{msgs.btn_cancelar}" onclick="cadProdutosDialog.hide();" />
+			</h:panelGrid>
+		</h:form>	
+	</p:dialog>
+	<script type="text/javascript">
+	    function handleCadastroRequest(xhr, status, args) {  
+	        if(!args.validationFailed) {  
+	        	cadProdutosDialog.hide();  
+	        }  
+	    }  
+	</script>	
 	</f:view>
 </h:body>
 </html>

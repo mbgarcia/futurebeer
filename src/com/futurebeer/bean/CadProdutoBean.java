@@ -5,12 +5,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.faces.application.Application;
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
+import javax.faces.application.ViewHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+
+import org.apache.commons.beanutils.BeanUtils;
 
 import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.ProdutoDTO;
 import com.futurebeer.exception.BaseException;
+import com.futurebeer.util.LoggerApp;
+import com.futurebeer.util.MessagesUtil;
 import com.futurebeer.util.TipoProduto;
 import com.futurebeer.util.TipoProdutoComparator;
 
@@ -32,7 +43,11 @@ public class CadProdutoBean implements Serializable{
 	private List<ProdutoDTO> produtosCadastrados = null;
 	
 	public CadProdutoBean() {
-		updateProdutosCadastrados();
+		try {
+			updateProdutosCadastrados();
+		} catch (BaseException e) {
+			LoggerApp.error("Erro ao inicializar lista de produtos", e);
+		}
 	}
 
 	public Integer getId() {
@@ -84,14 +99,23 @@ public class CadProdutoBean implements Serializable{
 		this.descricao = selectedProduto.getDescricao();
 		this.valor     = selectedProduto.getValor();
 	}
+	
+	public String novoProduto(){
+		limparCampos();
+		return "cadProdutos";
+	}
 
-	public String editProduto() {
-		return null;
+	public String refresh() {
+		return "cadProdutos";
 	}
 	
 	public String addProduto(){
+		String mensagem = "";
+		Severity severity = null;
 		try {
 			ProdutoDTO produto = new ProdutoDTO();
+//			BeanUtils.copyProperties(produto, this.produto);
+			
 			produto.setIdProduto(this.getId());
 			produto.setDescricao(this.getDescricao());
 			produto.setValor(this.getValor());
@@ -106,27 +130,70 @@ public class CadProdutoBean implements Serializable{
 			}else{
 				FactoryDao.getInstance().getProdutoDao().atualizarProduto(produto);
 			}
-			
-			this.setId(null);
-			this.setValor(null);
-			this.setTipo(0);
-			this.setDescricao("");
-			
-			updateProdutosCadastrados();
-		} catch (BaseException e) {
-			e.printStackTrace();
+						
+			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.SUCESSO_SALVAR_PROD);
+			severity = FacesMessage.SEVERITY_INFO;
+		} catch (Exception e) {
+			mensagem = e.getMessage();
+			severity = FacesMessage.SEVERITY_ERROR;
+			LoggerApp.error(mensagem, e);
+		}finally{
+			try {
+				limparCampos();			
+				updateProdutosCadastrados();
+			} catch (Exception e) {
+				LoggerApp.error(e);
+			}
 		}
-		return null;
+		
+		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
+		FacesContext.getCurrentInstance().addMessage(null, message);
+		
+		return "cadProdutos";
+	}
+	
+	public String deleteProduto(){
+		String mensagem = "";
+		Severity severity = null;
+
+		try {
+			if (this.getId() != null && this.getId() != 0){
+				FactoryDao.getInstance().getProdutoDao().deleteProduto(this.getId());
+				mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.SUCESSO_DEL_PROD);
+				severity = FacesMessage.SEVERITY_INFO;
+			}else{
+				mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_ID_PRODUTO_NULL);
+				severity = FacesMessage.SEVERITY_ERROR;
+			}
+		} catch (Exception e) {
+			mensagem = e.getMessage();
+			severity = FacesMessage.SEVERITY_ERROR;
+			LoggerApp.error(mensagem, e);
+		}finally{
+			try {
+				limparCampos();			
+				updateProdutosCadastrados();
+			} catch (Exception e) {
+				LoggerApp.error(e);
+			}	
+		}
+		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
+		FacesContext.getCurrentInstance().addMessage(null, message);
+		
+		return "cadProdutos";
 	}
 	
 	//Metodo recupera
-	private Collection<ProdutoDTO> updateProdutosCadastrados(){
-		try {
-			produtosCadastrados = FactoryDao.getInstance().getProdutoDao().getProdutos();
-			Collections.sort(produtosCadastrados, new TipoProdutoComparator());
-		} catch (BaseException e) {
-			e.printStackTrace();
-		}
+	private Collection<ProdutoDTO> updateProdutosCadastrados() throws BaseException{
+		produtosCadastrados = FactoryDao.getInstance().getProdutoDao().getProdutos();
+		Collections.sort(produtosCadastrados, new TipoProdutoComparator());
 		return produtosCadastrados;
+	}
+	
+	private void limparCampos(){
+		this.setId(null);
+		this.setValor(null);
+		this.setTipo(0);
+		this.setDescricao("");		
 	}
 }

@@ -1,3 +1,8 @@
 .ui-panel-titlebar ui-widget-header ui-corner-all {
 	background-color:red;
 }
+
+.errors { 
+   font-style: italic; 
+   color: red; 
+} 

@@ -10,4 +10,8 @@ public class BaseException extends Exception{
 	public BaseException(String string, Exception e) {
 		super(string, e);
 	}
+
+	public BaseException(String string) {
+		super(string);
+	}
 }
