@@ -64,12 +64,15 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 				List<ItemPedido> itens = pedido.getItens();
 				
 				for (ItemPedido item : itens) {
-					ItemPedidoDTO itemDTO = new ItemPedidoDTO();
-					itemDTO.setQtdade(item.getQtdade());
-					itemDTO.setDescricao(item.getProduto().getDescricao());
-					itemDTO.setValorPedido(item.getQtdade() * item.getProduto().getValor());
-					
-					pedidosDTO.add(itemDTO);
+					if (item.getExcluido() == null){
+						ItemPedidoDTO itemDTO = new ItemPedidoDTO();
+						itemDTO.setIdItemPedido(item.getId());
+						itemDTO.setQtdade(item.getQtdade());
+						itemDTO.setDescricao(item.getProduto().getDescricao());
+						itemDTO.setValorPedido(item.getQtdade() * item.getProduto().getValor());
+						
+						pedidosDTO.add(itemDTO);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -79,5 +82,24 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 		}
 		
 		return pedidosDTO;
+	}
+
+	public void removeItemPedido(Integer idItemPedido) throws BaseException {
+		LoggerApp.debug("Removendo o item do pedido: " + idItemPedido);
+		EntityManager em = null;
+		ItemPedido item = null;
+		try {
+			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
+			em = emf.createEntityManager();
+			em.getTransaction().begin();
+			item = em.find(ItemPedido.class, idItemPedido);
+			item.setExcluido(1);
+			em.merge(item);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			throw new BaseException("Erro ao remover o item do pedido pelo id :" + idItemPedido, e);
+		}finally{
+			em.close();
+		}		
 	}
 }

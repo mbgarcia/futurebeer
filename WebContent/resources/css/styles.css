@@ -1,4 +1,4 @@
-.ui-panel-titlebar ui-widget-header ui-corner-all {
+.ui-panel.ui-panel-titlebar.ui-widget-header {
 	background-color:red;
 }
 

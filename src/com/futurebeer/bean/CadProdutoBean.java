@@ -5,17 +5,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
-import javax.faces.application.ViewHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-
-import org.apache.commons.beanutils.BeanUtils;
 
 import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.ProdutoDTO;

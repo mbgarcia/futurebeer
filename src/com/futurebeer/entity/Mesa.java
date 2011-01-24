@@ -29,9 +29,15 @@ public class Mesa implements Serializable{
 	@Column(name="numero", nullable=false)
 	private String numero;
 	
-	@Column(name="status", nullable=true)
+	@Column(name="status", nullable=false)
 	@Enumerated(EnumType.ORDINAL)
 	private StatusMesa status;
+	
+	@Column(name="ativa", nullable=false)
+	private Integer ativa;
+
+	@Column(name="extra", nullable=false)
+	private Integer extra;
 	
 	@OneToMany(mappedBy="mesa", fetch=FetchType.LAZY)
 	private List<MesaOcupacao> ocupacoes;
@@ -58,6 +64,22 @@ public class Mesa implements Serializable{
 
 	public void setStatus(StatusMesa status) {
 		this.status = status;
+	}
+
+	public Integer getAtiva() {
+		return ativa;
+	}
+
+	public void setAtiva(Integer ativa) {
+		this.ativa = ativa;
+	}
+
+	public Integer getExtra() {
+		return extra;
+	}
+
+	public void setExtra(Integer extra) {
+		this.extra = extra;
 	}
 
 	public List<MesaOcupacao> getOcupacoes() {

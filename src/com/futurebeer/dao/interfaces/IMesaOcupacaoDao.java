@@ -13,4 +13,6 @@ public interface IMesaOcupacaoDao {
 	public MesaOcupacao findById(Integer id) throws BaseException;
 	
 	public List<ItemPedidoDTO> getPedidosMesa(Integer id) throws BaseException;
+
+	public void removeItemPedido(Integer idItemPedido) throws BaseException;
 }

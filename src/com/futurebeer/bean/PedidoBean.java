@@ -3,9 +3,11 @@ package com.futurebeer.bean;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
+import javax.faces.application.ViewHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIViewRoot;
@@ -17,8 +19,8 @@ import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.dto.PedidoDTO;
 import com.futurebeer.entity.Produto;
 import com.futurebeer.exception.BaseException;
-import com.futurebeer.util.JasperUtil;
 import com.futurebeer.util.LoggerApp;
+import com.futurebeer.util.MessagesUtil;
 import com.futurebeer.util.TipoProduto;
 
 @ManagedBean(name="pedidoBean")
@@ -35,6 +37,8 @@ public class PedidoBean implements Serializable{
 	private int qtdade;
 	
 	private List<ItemPedidoDTO> itens = new ArrayList<ItemPedidoDTO>();
+	
+	private ItemPedidoDTO selectedItem = null;
 	
 	public MesaDTO getSelectedMesa() {
 		return selectedMesa;
@@ -79,6 +83,15 @@ public class PedidoBean implements Serializable{
 		this.itens = itens;
 	}
 	
+	
+	public ItemPedidoDTO getSelectedItem() {
+		return selectedItem;
+	}
+
+	public void setSelectedItem(ItemPedidoDTO itemPedido) {
+		this.selectedItem = itemPedido;
+	}	
+	
 	public void addItem(){
 		LoggerApp.debug("Item adicionado [ " + getIdProduto() + " , " + getQtdade() + "]" );
 		if (itens == null){
@@ -90,6 +103,7 @@ public class PedidoBean implements Serializable{
 			String descricao = produto.getDescricao();
 			TipoProduto tipoProduto = produto.getTipo();
 			ItemPedidoDTO item = new ItemPedidoDTO();
+			item.setIndice(itens.size() + 1);
 			item.setIdProduto(getIdProduto());
 			item.setDescricao(descricao);
 			item.setTipoProduto(tipoProduto);
@@ -107,31 +121,69 @@ public class PedidoBean implements Serializable{
 		
 	}
 	
-	public void concluirPedido(){
+	public String deleteItemPedido(){
+		String mensagem = "";
+		Severity severity = null;
+		try {
+			for (ItemPedidoDTO item : itens) {
+				if (item.getIndice() == selectedItem.getIndice()){
+					itens.remove(item);
+					break;
+				}
+			}
+			
+			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.SUCESSO_EXCLUIR_ITEM);
+			severity = FacesMessage.SEVERITY_INFO;			
+		} catch (Exception e) {
+			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_EXCLUIR_ITEM);
+			severity = FacesMessage.SEVERITY_ERROR;
+			LoggerApp.error(mensagem, e);
+		}
+		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
+		FacesContext.getCurrentInstance().addMessage(null, message);
+		
+		return "dashboard";
+	}
+	
+	public String concluirPedido(){
+		String mensagem = "";
+		Severity severity = null;
+		
 		try {
 			PedidoDTO dto = new PedidoDTO();
 			dto.setIdOcupacao(getSelectedMesa().getIdOcupacao());
 			List<ItemPedidoDTO> novosItens = new ArrayList<ItemPedidoDTO>();
-			for (ItemPedidoDTO itemDTO : getItens()) {
-				ItemPedidoDTO novoItem = new ItemPedidoDTO();
-				novoItem.setDescricao(itemDTO.getDescricao());
-				novoItem.setIdProduto(itemDTO.getIdProduto());
-				novoItem.setQtdade(itemDTO.getQtdade());
-				novoItem.setTipoProduto(itemDTO.getTipoProduto());
-				novosItens.add(novoItem);
+			List<ItemPedidoDTO> itensDoPedido = getItens();
+			if (itensDoPedido.size() == 0){
+				mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_PEDIDO_VAZIO);
+				severity = FacesMessage.SEVERITY_ERROR;				
+			}else{				
+				for (ItemPedidoDTO itemDTO : itensDoPedido) {
+					ItemPedidoDTO novoItem = new ItemPedidoDTO();
+					novoItem.setDescricao(itemDTO.getDescricao());
+					novoItem.setIdProduto(itemDTO.getIdProduto());
+					novoItem.setQtdade(itemDTO.getQtdade());
+					novoItem.setTipoProduto(itemDTO.getTipoProduto());
+					novosItens.add(novoItem);
+				}
+				dto.setItens(novosItens);
+				FactoryDao.getInstance().getPedidoDao().addPedido(dto);
+//			JasperUtil.getInstance().gerarRelatorio(FacesContext.getCurrentInstance(), novosItens, getSelectedMesa().getNumero());
+				mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.SUCESSO_SALVAR_PEDIDO);
+				severity = FacesMessage.SEVERITY_INFO;
 			}
-			dto.setItens(novosItens);
-			FactoryDao.getInstance().getPedidoDao().addPedido(dto);
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Mensagem",  "Pedido realizado.");
-			JasperUtil.getInstance().gerarRelatorio(FacesContext.getCurrentInstance(), novosItens, getSelectedMesa().getNumero());
 		} catch (BaseException e) {
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao processar pedido.");  
-			
-			FacesContext.getCurrentInstance().addMessage(null, message);  
-			e.printStackTrace();
+			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_SALVAR_PEDIDO);
+			severity = FacesMessage.SEVERITY_ERROR;
+			LoggerApp.error(mensagem, e);
 		}finally{
 			limpaPedido();
 		}
+		
+		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
+		FacesContext.getCurrentInstance().addMessage(null, message);
+		
+		return "dashboard";
 	}
 
 	public void cancelaPedido(){
@@ -169,4 +221,28 @@ public class PedidoBean implements Serializable{
 		}
 		return total;
 	}
+	
+	public String deleteItemPedidoMesa(){
+		String mensagem = "";
+		Severity severity = null;
+		try {
+			for (ItemPedidoDTO item : itens) {
+				if (item.getIndice() == selectedItem.getIndice()){
+					itens.remove(item);
+					break;
+				}
+			}
+			
+			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.SUCESSO_EXCLUIR_ITEM);
+			severity = FacesMessage.SEVERITY_INFO;			
+		} catch (Exception e) {
+			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_EXCLUIR_ITEM);
+			severity = FacesMessage.SEVERITY_ERROR;
+			LoggerApp.error(mensagem, e);
+		}
+		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
+		FacesContext.getCurrentInstance().addMessage(null, message);
+		
+		return "dashboard";
+	}	
 }

@@ -6,15 +6,15 @@ import java.util.Date;
 public class MesaDTO implements Serializable{
 	private static final long serialVersionUID = -2971076177028793158L;
 	
-	private int idMesa;
+	private Integer id;
 
 	private String numero;
 	
-	private int status;
-
+	private Integer status;
+	
 	private boolean ocupada;
 
-	private int idOcupacao;
+	private Integer idOcupacao;
 	
 	private Date abertura;
 	
@@ -22,14 +22,18 @@ public class MesaDTO implements Serializable{
 	
 	private String cor;
 	
+	private Integer extra;
+	
+	private Integer ativa;
+
 	public MesaDTO() {}
 
-	public int getIdMesa() {
-		return idMesa;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setIdMesa(int idMesa) {
-		this.idMesa = idMesa;
+	public void setId(Integer idMesa) {
+		this.id = idMesa;
 	}
 
 	public String getNumero() {
@@ -40,11 +44,11 @@ public class MesaDTO implements Serializable{
 		this.numero = numero;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 	
@@ -56,11 +60,11 @@ public class MesaDTO implements Serializable{
 		this.ocupada = ocupada;
 	}
 
-	public int getIdOcupacao() {
+	public Integer getIdOcupacao() {
 		return idOcupacao;
 	}
 
-	public void setIdOcupacao(int idOcupacao) {
+	public void setIdOcupacao(Integer idOcupacao) {
 		this.idOcupacao = idOcupacao;
 	}
 
@@ -86,5 +90,21 @@ public class MesaDTO implements Serializable{
 
 	public void setCor(String cor) {
 		this.cor = cor;
+	}
+
+	public Integer getExtra() {
+		return extra;
+	}
+
+	public void setExtra(Integer extra) {
+		this.extra = extra;
+	}
+
+	public Integer getAtiva() {
+		return ativa;
+	}
+
+	public void setAtiva(Integer ativa) {
+		this.ativa = ativa;
 	}
 }

@@ -46,7 +46,7 @@ public class ProdutoDao implements IProdutoDao {
 		if (descricao == null){
 			return null;
 		}
-		LoggerApp.debug("Find produto pela descicao: " + descricao);
+		LoggerApp.debug("Find produto pela descricao: " + descricao);
 		EntityManager em = null;
 		Produto produto = null;
 		try {

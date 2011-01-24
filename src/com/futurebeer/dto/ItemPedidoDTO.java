@@ -7,6 +7,10 @@ import com.futurebeer.util.TipoProduto;
 public class ItemPedidoDTO implements Serializable{
 	private static final long serialVersionUID = 3580443685613565340L;
 	
+	private int indice;
+	
+	private int idItemPedido;
+
 	private int idProduto;
 	
 	private String descricao;
@@ -19,6 +23,22 @@ public class ItemPedidoDTO implements Serializable{
 	private double valorPedido;
 	
 	public ItemPedidoDTO() {}
+
+	public int getIndice() {
+		return indice;
+	}
+
+	public void setIndice(int indice) {
+		this.indice = indice;
+	}
+
+	public int getIdItemPedido() {
+		return idItemPedido;
+	}
+
+	public void setIdItemPedido(int idItemPedido) {
+		this.idItemPedido = idItemPedido;
+	}
 
 	public int getIdProduto() {
 		return idProduto;

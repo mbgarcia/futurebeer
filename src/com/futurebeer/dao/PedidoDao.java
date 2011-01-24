@@ -21,23 +21,16 @@ public class PedidoDao implements IPedidoDao{
 
 	public Pedido addPedido(PedidoDTO pedidoDTO) throws BaseException {
 		LoggerApp.debug("Adicionando pedido...");
+
+		List<ItemPedido> itens = new ArrayList<ItemPedido>();
+
 		MesaOcupacao ocupacao = FactoryDao.getInstance().getMesaOcupacaoDao().findById(Integer.valueOf(pedidoDTO.getIdOcupacao()));
 		
-		EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 		Pedido pedido = new Pedido();
 		EntityManager em = null;
 		try {
-			em = emf.createEntityManager();
-			em.getTransaction().begin();
-			
-			pedido.setMesaOcupacao(ocupacao);
-			
-			List<ItemPedido> itens = new ArrayList<ItemPedido>();
-			
 			List<ItemPedidoDTO> listaItensDTO = pedidoDTO.getItens();
-			
 			LoggerApp.debug("adicionando itens ao pedido.....");
-			
 			for (ItemPedidoDTO itemPedidoDTO : listaItensDTO) {
 				ItemPedido item = new ItemPedido();
 				item.setPedido(pedido);
@@ -50,8 +43,12 @@ public class PedidoDao implements IPedidoDao{
 				itens.add(item);
 				LoggerApp.debug("item adicionado : " + item.toString());
 			}
+
+			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
+			em = emf.createEntityManager();
+			em.getTransaction().begin();
 			pedido.setItens(itens);
-			
+			pedido.setMesaOcupacao(ocupacao);
 			em.persist(pedido);
 			em.getTransaction().commit();
 

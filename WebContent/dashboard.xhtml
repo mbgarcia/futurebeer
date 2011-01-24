@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html 
 	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"	 
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.prime.com.tr/ui">
@@ -19,12 +20,13 @@
 	<f:view contentType="text/html">
 	<h:form prependId="false">
 		<p:commandButton action="#{produtoBean.initCadastro}" value="#{msgs.btn_cadastro_produtos}" ajax="false"/>
+		<p:growl id="messages" showDetail="true" showSummary="false" life="2000"/>		
 		
 		<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="25" paginator="true" effect="true"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">		
 			<p:column>
 				<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center;">
-					<h:panelGrid columns="4">
+					<h:panelGrid columns="6">
 						<h:commandLink title="#{msgs.btn_abrir_mesa}" disabled="#{mesa.ocupada}" action="#{mesaBean.abrirMesa}">
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
 	                       	<h:graphicImage  library="images" name="open_#{! mesa.ocupada}.png"/>
@@ -36,32 +38,43 @@
 	                   	</p:commandLink>
 						<p:commandLink update="tablePedidoResumo" disabled="#{! mesa.ocupada}" oncomplete="pedidosResumoDialog.show()" title="#{msgs.btn_ver_pedidos_mesa}">  
 	                       	<p:graphicImage value="/resources/images/search_#{mesa.ocupada}.png" />
-	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{pedidoBean.selectedMesa}" />
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{resumoPedidoBean.selectedMesa}" />
 	                   	</p:commandLink>
 						<h:commandLink title="#{msgs.btn_fechar_mesa}" disabled="#{! mesa.ocupada}" action="#{mesaBean.fecharMesa}">
 	                       	<h:graphicImage library="images" name="close_#{mesa.ocupada}.png"/>
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
-	                   	</h:commandLink>	                   	
+	                   	</h:commandLink>
+	                   	<p:separator style="width:5px;height:30px"/>
+	           			<p:commandButton image="ui-icon ui-icon-circle-plus" style="width:20px;height:20px" action="#{mesaBean.addMesaExtra}" rendered="#{mesa.extra == 0}" ajax="false">
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
+						</p:commandButton>
+	           			<p:commandButton image="ui-icon ui-icon-trash" style="width:20px;height:20px" action="#{mesaBean.excluirMesaExtra}" rendered="#{mesa.extra == 1}" ajax="false">
+	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
+						</p:commandButton>
 					</h:panelGrid>
 				</p:panel>
 			</p:column>
 		</p:dataGrid>
+	</h:form>
 	
-		<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosDialog" width="600" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+	<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosDialog" width="600" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+		<h:form prependId="false">
 			<p:outputPanel id="pedidosDetail" style="text-align:left;">
 				<p>
 					<h:outputLabel for="listaProduto" value="#{msgs.produtos_label}" />
 					<br/>
-					<h:selectOneListbox id="listaProduto" value="#{pedidoBean.idProduto}" size="10" style="width:100%">
+					<h:selectOneListbox id="listaProduto" value="#{pedidoBean.idProduto}" size="10" style="width:100%" required="true" requiredMessage="#{msgs.required_pedido_produto}">
 						<f:selectItems value="#{produtoBean.produtos}" var="p" itemLabel="#{p.descricao}" itemValue="#{p.idProduto}"/>
 					</h:selectOneListbox>
 				</p>
 				<p>
-					<h:outputLabel for="inputQtdade" value="#{msgs.qtdade_label}" />
-					<h:inputText id="inputQtdade" value="#{pedidoBean.qtdade}"/>
-					<p:commandButton actionListener="#{pedidoBean.addItem}" value="#{msgs.btn_add_item}" update="itensTable, inputQtdade"/>
+					<h:outputLabel for="qtdade" value="#{msgs.qtdade_label}" />
+					<h:inputText id="qtdade" value="#{pedidoBean.qtdade}" required="true" requiredMessage="#{msgs.required_pedido_qtdade}">
+						<f:validateLongRange minimum="1"/>
+					</h:inputText>
+					<p:commandButton actionListener="#{pedidoBean.addItem}" value="#{msgs.btn_add_item}" update="itensTable, qtdade, messages"/>
 				</p>
-				<p:dataTable var="item" value="#{pedidoBean.itens}" id="itensTable">
+				<p:dataTable var="item" value="#{pedidoBean.itens}" id="itensTable" selectionMode="single">
 					<p:column width="300">
 						<f:facet name="header">
 							#{msgs.produto_label}
@@ -74,15 +87,30 @@
 						</f:facet>
 						<h:outputText value="#{item.qtdade}"/>
 					</p:column>
+					<p:column style="width:32px">
+	           			<p:commandButton image="ui-icon ui-icon-trash" update="pedidosDetail, messages" action="#{pedidoBean.deleteItemPedido}" immediate="true">
+	           				<f:setPropertyActionListener value="#{item}"	target="#{pedidoBean.selectedItem}" />
+	           			</p:commandButton>
+	               	</p:column>
 				</p:dataTable>
-				<p:commandButton actionListener="#{pedidoBean.cancelaPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_cancelar_pedido}"/>
-				<p:commandButton actionListener="#{pedidoBean.concluirPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_concluir_pedido}"/>
+				<p:commandButton actionListener="#{pedidoBean.cancelaPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_cancelar_pedido}" immediate="true"/>
+				<p:commandButton action="#{pedidoBean.concluirPedido}" oncomplete="handleCadastroRequest(xhr, status, args)" value="#{msgs.btn_concluir_pedido}" update="messages" immediate="true"/>
+				
 			</p:outputPanel>
-		</p:dialog>
+		</h:form>
+	</p:dialog>
+	<script type="text/javascript">
+	    function handleCadastroRequest(xhr, status, args) {  
+	        if(!args.validationFailed) {  
+	        	pedidosDialog.hide();  
+	        }  
+	    }  
+	</script>		
 
-		<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosResumoDialog" width="800" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+	<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosResumoDialog" width="800" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
+		<h:form prependId="false">
 			<p:outputPanel id="pedidosResumoDetail" style="text-align:left;">
-				<p:dataTable var="item" value="#{pedidoBean.pedidosMesa}" id="tablePedidoResumo">
+				<p:dataTable var="item" value="#{resumoPedidoBean.pedidosMesa}" id="tablePedidoResumo">
 					<f:facet name="header">
 						#{msgs.title_resumo_pedidos}
 					</f:facet>  
@@ -104,18 +132,23 @@
 					<p:column width="40">
 						#{item.valorPedido}
 					</p:column>
+					<p:column style="width:32px">
+	           			<p:commandButton image="ui-icon ui-icon-trash" update="pedidosResumoDetail, messages" action="#{resumoPedidoBean.deleteItemPedidoMesa}" immediate="true">
+	           				<f:setPropertyActionListener value="#{item}"	target="#{resumoPedidoBean.selectedItem}" />
+	           			</p:commandButton>
+	               	</p:column>
 
 					<p:columnGroup type="footer">
 						<p:row>
 						 	<p:column colspan="2" footerText="Total:" style="text-align:right"  />
-							<p:column footerText="#{pedidoBean.totalPedidos}"/>
+							<p:column footerText="#{resumoPedidoBean.totalPedidos}"/>
 						</p:row>
 					</p:columnGroup>
 				</p:dataTable>
 				<p:commandButton oncomplete="pedidosResumoDialog.hide()" value="#{msgs.btn_fechar_pedido}"/>
 			</p:outputPanel>
-		</p:dialog>			
-	</h:form>
+		</h:form>
+	</p:dialog>
 	</f:view>
 </h:body>
 </html>
