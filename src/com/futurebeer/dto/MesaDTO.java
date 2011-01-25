@@ -20,11 +20,11 @@ public class MesaDTO implements Serializable{
 	
 	private Date fechamento;
 	
-	private String cor;
-	
 	private Integer extra;
 	
 	private Integer ativa;
+	
+	private String cssMesa;
 
 	public MesaDTO() {}
 
@@ -84,14 +84,6 @@ public class MesaDTO implements Serializable{
 		this.fechamento = fechamento;
 	}
 
-	public String getCor() {
-		return cor;
-	}
-
-	public void setCor(String cor) {
-		this.cor = cor;
-	}
-
 	public Integer getExtra() {
 		return extra;
 	}
@@ -106,5 +98,13 @@ public class MesaDTO implements Serializable{
 
 	public void setAtiva(Integer ativa) {
 		this.ativa = ativa;
+	}
+
+	public String getCssMesa() {
+		return cssMesa;
+	}
+
+	public void setCssMesa(String cssMesa) {
+		this.cssMesa = cssMesa;
 	}
 }

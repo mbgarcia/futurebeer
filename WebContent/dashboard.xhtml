@@ -25,7 +25,7 @@
 		<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="25" paginator="true" effect="true"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">		
 			<p:column>
-				<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center;">
+				<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center;" styleClass="#{mesa.cssMesa}">
 					<h:panelGrid columns="6">
 						<h:commandLink title="#{msgs.btn_abrir_mesa}" disabled="#{mesa.ocupada}" action="#{mesaBean.abrirMesa}">
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />

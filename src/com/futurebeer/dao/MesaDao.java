@@ -72,12 +72,12 @@ public class MesaDao implements IMesaDao{
 					
 					switch (item.getStatus()){
 						case LIVRE:{
-							mesa.setCor("green");
+							mesa.setCssMesa("mesa_livre");
 							mesa.setOcupada(false);
 							break;
 						}
 						case OCUPADA: {
-							mesa.setCor("red");
+							mesa.setCssMesa("mesa_ocupada");
 							mesa.setOcupada(true);
 							break;
 						}

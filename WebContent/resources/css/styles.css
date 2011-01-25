@@ -1,5 +1,11 @@
-.ui-panel.ui-panel-titlebar.ui-widget-header {
-	background-color:red;
+.mesa_ocupada .ui-panel-titlebar {
+    background: #993333;
+    color:#CCCCCC;
+}
+
+.mesa_livre .ui-panel-titlebar {
+    background: #339933;
+    color:#CCCCCC;
 }
 
 .errors { 
