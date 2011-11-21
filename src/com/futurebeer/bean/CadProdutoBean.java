@@ -24,6 +24,8 @@ import com.futurebeer.util.TipoProdutoComparator;
 public class CadProdutoBean implements Serializable{
 	private static final long serialVersionUID = -5581568217031954250L;
 	
+	private Integer codigo;
+	
 	private String descricao;
 	
 	private Integer id;
@@ -42,6 +44,14 @@ public class CadProdutoBean implements Serializable{
 		} catch (BaseException e) {
 			LoggerApp.error("Erro ao inicializar lista de produtos", e);
 		}
+	}
+	
+	public Integer getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(Integer codigo) {
+		this.codigo = codigo;
 	}
 
 	public Integer getId() {
@@ -110,6 +120,7 @@ public class CadProdutoBean implements Serializable{
 			ProdutoDTO produto = new ProdutoDTO();
 //			BeanUtils.copyProperties(produto, this.produto);
 			
+			produto.setCodigo(this.getCodigo());
 			produto.setIdProduto(this.getId());
 			produto.setDescricao(this.getDescricao());
 			produto.setValor(this.getValor());
@@ -185,6 +196,7 @@ public class CadProdutoBean implements Serializable{
 	}
 	
 	private void limparCampos(){
+		this.setCodigo(null);
 		this.setId(null);
 		this.setValor(null);
 		this.setTipo(0);

@@ -7,6 +7,8 @@ import com.futurebeer.util.TipoProduto;
 public class ProdutoDTO implements Serializable {
 	private static final long serialVersionUID = 354182493537537073L;
 	
+	private Integer codigo;
+
 	private Integer idProduto;
 	
 	private String descricao;
@@ -16,6 +18,14 @@ public class ProdutoDTO implements Serializable {
 	private double valor;
 	
 	public ProdutoDTO() {}
+
+	public Integer getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(Integer codigo) {
+		this.codigo = codigo;
+	}
 
 	public Integer getIdProduto() {
 		return idProduto;
@@ -50,6 +60,6 @@ public class ProdutoDTO implements Serializable {
 	}
 
 	public String toString() {
-		return "produtoDTO - [id: "  +this.getIdProduto() + " , descricao: " + this.getDescricao() + " , "  + this.getTipo() + " , " + this.getValor() + "]";
+		return "produtoDTO - [id: "  +this.getIdProduto() + " , codigo: " + this.getCodigo() + " , descricao: " + this.getDescricao() + " , "  + this.getTipo() + " , " + this.getValor() + "]";
 	}
 }

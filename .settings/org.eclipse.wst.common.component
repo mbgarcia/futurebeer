@@ -3,7 +3,8 @@
     <wb-module deploy-name="futurebeer">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="futurebeer"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/tests"/>
         <property name="java-output-path" value="/futurebeer/build/classes"/>
+        <property name="context-root" value="futurebeer"/>
     </wb-module>
 </project-modules>

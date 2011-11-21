@@ -88,4 +88,8 @@ public class MesaOcupacao implements Serializable{
 	public void setPedidos(List<Pedido> pedidos) {
 		this.pedidos = pedidos;
 	}
+	
+	public String toString() {
+		return "MesaOcupacao [id:" + id + ", abertura: " + abertura + ", mesa: " + mesa + "]";
+	}
 }

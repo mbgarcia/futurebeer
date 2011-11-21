@@ -4,14 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
-import javax.faces.application.ViewHandler;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIViewRoot;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+
+import org.slf4j.Logger;
 
 import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.ItemPedidoDTO;
@@ -19,26 +18,30 @@ import com.futurebeer.dto.MesaDTO;
 import com.futurebeer.dto.PedidoDTO;
 import com.futurebeer.entity.Produto;
 import com.futurebeer.exception.BaseException;
-import com.futurebeer.util.LoggerApp;
 import com.futurebeer.util.MessagesUtil;
+import com.futurebeer.util.SerialPrinterUtil;
 import com.futurebeer.util.TipoProduto;
 
 @ManagedBean(name="pedidoBean")
-@SessionScoped
+@ViewScoped
 public class PedidoBean implements Serializable{
 	private static final long serialVersionUID = 7708544055015828412L;
 	
+	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(PedidoBean.class);
+	
 	private MesaDTO selectedMesa;
 
-	private int idProduto;
+	private Integer codProduto;
 	
-	private String descricao;
+	private String descProduto;
 	
 	private int qtdade;
 	
 	private List<ItemPedidoDTO> itens = new ArrayList<ItemPedidoDTO>();
 	
 	private ItemPedidoDTO selectedItem = null;
+	
+	private boolean addItem = false;
 	
 	public MesaDTO getSelectedMesa() {
 		return selectedMesa;
@@ -48,20 +51,12 @@ public class PedidoBean implements Serializable{
 		this.selectedMesa = selectedMesa;
 	}
 
-	public int getIdProduto() {
-		return idProduto;
+	public Integer getCodProduto() {
+		return codProduto;
 	}
 
-	public void setIdProduto(int idProduto) {
-		this.idProduto = idProduto;
-	}
-	
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
+	public void setCodProduto(Integer codProduto) {
+		this.codProduto = codProduto;
 	}
 
 	public int getQtdade() {
@@ -93,29 +88,27 @@ public class PedidoBean implements Serializable{
 	}	
 	
 	public void addItem(){
-		LoggerApp.debug("Item adicionado [ " + getIdProduto() + " , " + getQtdade() + "]" );
+		logger.debug("Item adicionado [ " + getCodProduto() + " , " + getQtdade() + "]" );
 		if (itens == null){
 			itens = new ArrayList<ItemPedidoDTO>();
 		}
 		
 		try {
-			Produto produto = FactoryDao.getInstance().getProdutoDao().findById(getIdProduto());
-			String descricao = produto.getDescricao();
+			Produto produto = FactoryDao.getInstance().getProdutoDao().findByCodigo(getCodProduto());
 			TipoProduto tipoProduto = produto.getTipo();
 			ItemPedidoDTO item = new ItemPedidoDTO();
 			item.setIndice(itens.size() + 1);
-			item.setIdProduto(getIdProduto());
-			item.setDescricao(descricao);
+			item.setIdProduto(produto.getId());
+			item.setDescricao(produto.getDescricao());
 			item.setTipoProduto(tipoProduto);
 			item.setQtdade(getQtdade());
 			
 			itens.add(item);
 			this.qtdade = 0;
+			this.codProduto = 0;
 		} catch (BaseException e) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao processar pedido.");  
-			
 			FacesContext.getCurrentInstance().addMessage(null, message);  
-			
 			e.printStackTrace();
 		}
 		
@@ -137,7 +130,7 @@ public class PedidoBean implements Serializable{
 		} catch (Exception e) {
 			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_EXCLUIR_ITEM);
 			severity = FacesMessage.SEVERITY_ERROR;
-			LoggerApp.error(mensagem, e);
+			logger.error(mensagem, e);
 		}
 		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
 		FacesContext.getCurrentInstance().addMessage(null, message);
@@ -149,8 +142,9 @@ public class PedidoBean implements Serializable{
 		String mensagem = "";
 		Severity severity = null;
 		
+		PedidoDTO dto = new PedidoDTO();
+		
 		try {
-			PedidoDTO dto = new PedidoDTO();
 			dto.setIdOcupacao(getSelectedMesa().getIdOcupacao());
 			List<ItemPedidoDTO> novosItens = new ArrayList<ItemPedidoDTO>();
 			List<ItemPedidoDTO> itensDoPedido = getItens();
@@ -168,22 +162,36 @@ public class PedidoBean implements Serializable{
 				}
 				dto.setItens(novosItens);
 				FactoryDao.getInstance().getPedidoDao().addPedido(dto);
-//			JasperUtil.getInstance().gerarRelatorio(FacesContext.getCurrentInstance(), novosItens, getSelectedMesa().getNumero());
 				mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.SUCESSO_SALVAR_PEDIDO);
 				severity = FacesMessage.SEVERITY_INFO;
 			}
 		} catch (BaseException e) {
 			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_SALVAR_PEDIDO);
 			severity = FacesMessage.SEVERITY_ERROR;
-			LoggerApp.error(mensagem, e);
+			logger.error(mensagem, e);
 		}finally{
 			limpaPedido();
 		}
 		
+		//so busca a impressao se o pedido foi feito com sucesso.
+		if (severity != FacesMessage.SEVERITY_ERROR){
+			try {
+				logger.debug("Impressao do pedido");
+				SerialPrinterUtil.getInstance().imprimePedido(dto);
+			} catch (BaseException e) {
+				mensagem = e.getMessage();  
+				severity = FacesMessage.SEVERITY_ERROR;
+			}
+			
+		}
+		
+		
 		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
 		FacesContext.getCurrentInstance().addMessage(null, message);
 		
-		return "dashboard";
+
+		
+		return null;
 	}
 
 	public void cancelaPedido(){
@@ -205,7 +213,7 @@ public class PedidoBean implements Serializable{
 		} catch (Exception e) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao recuperar pedidos da mesa.");  
 			FacesContext.getCurrentInstance().addMessage(null, message);
-			LoggerApp.error("Erro ao recuperar pedidos da mesa." , e);
+			logger.error("Erro ao recuperar pedidos da mesa." , e);
 		}
 		
 		return pedidos;
@@ -238,11 +246,43 @@ public class PedidoBean implements Serializable{
 		} catch (Exception e) {
 			mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_EXCLUIR_ITEM);
 			severity = FacesMessage.SEVERITY_ERROR;
-			LoggerApp.error(mensagem, e);
+			logger.error(mensagem, e);
 		}
 		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
 		FacesContext.getCurrentInstance().addMessage(null, message);
 		
 		return "dashboard";
+	}
+
+	public void setDescProduto(String descProduto) {
+		this.descProduto = descProduto;
+	}
+
+	public String getDescProduto() {
+		descProduto = "----";
+		addItem = false;
+
+		try {
+			Produto produto = FactoryDao.getInstance().getProdutoDao().findByCodigo(this.codProduto);
+			if (produto != null){
+				descProduto = produto.getDescricao();
+				addItem = true;
+			}
+		} catch (BaseException e) {
+			String mensagem = MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_FIND_PROD_ID);
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  mensagem);  
+			FacesContext.getCurrentInstance().addMessage(null, message);
+			logger.error(mensagem, e);
+		}
+	
+		return descProduto;
+	}
+
+	public void setAddItem(boolean addItem) {
+		this.addItem = addItem;
+	}
+
+	public boolean isAddItem() {
+		return addItem;
 	}	
 }

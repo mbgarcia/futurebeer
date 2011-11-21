@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.slf4j.Logger;
+
 import com.futurebeer.dao.interfaces.IPedidoDao;
 import com.futurebeer.dto.ItemPedidoDTO;
 import com.futurebeer.dto.PedidoDTO;
@@ -15,12 +17,13 @@ import com.futurebeer.entity.Pedido;
 import com.futurebeer.entity.PersistenceManager;
 import com.futurebeer.entity.Produto;
 import com.futurebeer.exception.BaseException;
-import com.futurebeer.util.LoggerApp;
 
 public class PedidoDao implements IPedidoDao{
+	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(PedidoDao.class);
+	
 
 	public Pedido addPedido(PedidoDTO pedidoDTO) throws BaseException {
-		LoggerApp.debug("Adicionando pedido...");
+		logger.debug("Adicionando pedido...");
 
 		List<ItemPedido> itens = new ArrayList<ItemPedido>();
 
@@ -30,7 +33,7 @@ public class PedidoDao implements IPedidoDao{
 		EntityManager em = null;
 		try {
 			List<ItemPedidoDTO> listaItensDTO = pedidoDTO.getItens();
-			LoggerApp.debug("adicionando itens ao pedido.....");
+			logger.debug("adicionando itens ao pedido.....");
 			for (ItemPedidoDTO itemPedidoDTO : listaItensDTO) {
 				ItemPedido item = new ItemPedido();
 				item.setPedido(pedido);
@@ -38,10 +41,10 @@ public class PedidoDao implements IPedidoDao{
 				
 				Produto produto = FactoryDao.getInstance().getProdutoDao().findById(itemPedidoDTO.getIdProduto());
 				item.setProduto(produto);
-				LoggerApp.debug("produto recuperado " + (produto!=null?produto.getDescricao():""));
+				logger.debug("produto recuperado " + (produto!=null?produto.getDescricao():""));
 				
 				itens.add(item);
-				LoggerApp.debug("item adicionado : " + item.toString());
+				logger.debug("item adicionado : " + item.toString());
 			}
 
 			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
@@ -52,13 +55,15 @@ public class PedidoDao implements IPedidoDao{
 			em.persist(pedido);
 			em.getTransaction().commit();
 
-			LoggerApp.debug("Pedido adicionado!!!!");
+			logger.debug("Pedido adicionado!!!!");
 		} catch (Exception e) {
-			e.printStackTrace();
-			LoggerApp.error("Erro ao inserir pedido", e);
+			logger.error("Erro ao inserir pedido", e);
 		}finally{
-			em.close();
+			if (em != null){
+				em.close();
+			}
 		}
+		
 		return pedido;
 	}
 }

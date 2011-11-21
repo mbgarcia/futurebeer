@@ -35,6 +35,28 @@ public class ProdutoDao implements IProdutoDao {
 		return produto;
 	}
 
+	public Produto findByCodigo(Integer codigo) throws BaseException {
+		LoggerApp.debug("Find produto pelo codigo: " + codigo);
+		EntityManager em = null;
+		Produto produto = null;
+		try {
+			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
+			em = emf.createEntityManager();
+			Query query = em.createQuery("from Produto as p where p.codigo = :cod");
+			query.setParameter("cod", codigo);
+			//Como nao pode haver mais de um produto com o mesmo nome, deve retornar sempre um unico resultado.
+			produto = (Produto) query.getSingleResult();
+		}catch (NoResultException e){
+			return null;
+		}catch (Exception e) {
+			throw new BaseException(MessagesUtil.getInstance().getWebMessage(MessagesUtil.ERRO_FIND_PROD_CODIGO), e);
+		}finally{
+			em.close();
+		}
+		
+		return produto;
+	}
+
 	/**
 	 * Considera-se que nao pode haver dois ou mais produtos com o mesmo nome.
 	 * 
@@ -81,6 +103,7 @@ public class ProdutoDao implements IProdutoDao {
 				if (item.getAtivo() == 1){
 					ProdutoDTO produto = new ProdutoDTO();
 					produto.setIdProduto(item.getId());
+					produto.setCodigo(item.getCodigo());
 					produto.setDescricao(item.getDescricao());
 					produto.setTipo(item.getTipo());
 					produto.setValor(item.getValor());
@@ -106,6 +129,11 @@ public class ProdutoDao implements IProdutoDao {
 		if (produto != null && produto.getAtivo() == 1){
 			throw new BaseException(MessagesUtil.getInstance().getWebMessage(MessagesUtil.AVISO_EXISTE_PRODUTO_COM_DESC));
 		}
+
+		produto = this.findByCodigo(produtoDTO.getCodigo());
+		if (produto != null && produto.getAtivo() == 1){
+			throw new BaseException(MessagesUtil.getInstance().getWebMessage(MessagesUtil.AVISO_EXISTE_PRODUTO_COM_CODIGO));
+		}
 		
 		try {
 			em = emf.createEntityManager();
@@ -113,11 +141,13 @@ public class ProdutoDao implements IProdutoDao {
 			
 			if (produto != null && produto.getAtivo() == 0){//reativa o produto
 				produto.setAtivo(1);
+				produto.setDescricao(produtoDTO.getDescricao());
 				produto.setTipo(produtoDTO.getTipo());
 				produto.setValor(produtoDTO.getValor());
 				em.merge(produto);
 			}else{
 				produto = new Produto();
+				produto.setCodigo(produtoDTO.getCodigo());
 				produto.setDescricao(produtoDTO.getDescricao());
 				produto.setTipo(produtoDTO.getTipo());
 				produto.setValor(produtoDTO.getValor());
@@ -143,6 +173,7 @@ public class ProdutoDao implements IProdutoDao {
 		EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 		EntityManager em = null;
 		Produto produto = this.findByDescricao(produtoDTO.getDescricao());
+		
 		if (produto != null){
 			//realiza a validacao de descricao somente se for um produto diferente
 			if (produto.getId().intValue() != produtoDTO.getIdProduto().intValue()){
@@ -154,10 +185,24 @@ public class ProdutoDao implements IProdutoDao {
 			}
 		}
 
+		produto = this.findByCodigo(produtoDTO.getCodigo());
+
+		if (produto != null){
+			//realiza a validacao de codigo somente se for um produto diferente
+			if (produto.getId().intValue() != produtoDTO.getIdProduto().intValue()){
+				if (produto.getAtivo() == 1){
+					throw new BaseException(MessagesUtil.getInstance().getWebMessage(MessagesUtil.AVISO_EXISTE_PRODUTO_COM_CODIGO));
+				}else{
+					throw new BaseException(MessagesUtil.getInstance().getWebMessage(MessagesUtil.AVISO_EXISTE_PRODUTO_COM_CODIGO_INATIVO));
+				}
+			}
+		}
+
 		try {
 			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			produto = em.find(Produto.class, produtoDTO.getIdProduto());
+			produto.setCodigo(produtoDTO.getCodigo());
 			produto.setDescricao(produtoDTO.getDescricao());
 			produto.setTipo(produtoDTO.getTipo());
 			produto.setValor(produtoDTO.getValor());

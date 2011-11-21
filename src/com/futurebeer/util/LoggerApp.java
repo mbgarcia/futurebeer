@@ -22,7 +22,7 @@ public class LoggerApp {
 	* @since 1.0
 	*/
 	public static void debug(Object objMessage) {
-	logger.debug(objMessage);
+		logger.debug(getCaller() + objMessage);
 	}
 
 	/**
@@ -33,7 +33,7 @@ public class LoggerApp {
 	* @since 1.0
 	*/
 	public static void info(Object objMessage) {
-	logger.info(objMessage);
+		logger.info(objMessage);
 	}
 
 	/**
@@ -138,7 +138,27 @@ public class LoggerApp {
 	* @since 1.0
 	*/
 	public static void fatal(Object objMessage, Exception e) {
-	logger.fatal(objMessage, e);
+		logger.fatal(objMessage, e);
 	}
-
+	
+	public static void main(String[] args) {
+		LoggerApp.debug("Debug loggerapp");
+	}
+	
+	/*
+	 * posicoes no stack trace:
+	 * [0]: Thread    -- getStackTrace 
+	 * [1]: LoggerApp -- getCaller
+	 * [2]: LoggerApp -- metodo do logger (ex. debug)
+	 * [3]: o metodo da classe que chamou o logger.
+	 */
+	private static String getCaller(){
+		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+		if (trace.length >= 4){
+			StackTraceElement caller = trace[3];
+			return "[class: " + caller.getClassName() +" ; method: " + caller.getMethodName() + " ; " + caller.getLineNumber() + "] - ";			
+		}else{
+			return "[null caller]";
+		}
+	}
 }

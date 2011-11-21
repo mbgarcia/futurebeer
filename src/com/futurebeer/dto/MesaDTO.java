@@ -3,6 +3,8 @@ package com.futurebeer.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.futurebeer.util.Formatter;
+
 public class MesaDTO implements Serializable{
 	private static final long serialVersionUID = -2971076177028793158L;
 	
@@ -25,6 +27,8 @@ public class MesaDTO implements Serializable{
 	private Integer ativa;
 	
 	private String cssMesa;
+	
+	private Double valor;
 
 	public MesaDTO() {}
 
@@ -107,4 +111,20 @@ public class MesaDTO implements Serializable{
 	public void setCssMesa(String cssMesa) {
 		this.cssMesa = cssMesa;
 	}
+
+	public void setValor(Double valor) {
+		this.valor = valor;
+	}
+	
+	public String getValorFormatado() {
+		return Formatter.INSTANCE.formataMoeda(valor);
+	}
+	
+	public String getAberturaFormatada(){
+		return Formatter.INSTANCE.formataDataHora(abertura);
+	}
+	
+	public String getFechamentoFormatado(){
+		return Formatter.INSTANCE.formataDataHora(fechamento);
+	}	
 }

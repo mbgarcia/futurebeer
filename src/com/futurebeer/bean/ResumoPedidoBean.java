@@ -6,23 +6,30 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+
+import org.slf4j.Logger;
 
 import com.futurebeer.dao.FactoryDao;
 import com.futurebeer.dto.ItemPedidoDTO;
 import com.futurebeer.dto.MesaDTO;
+import com.futurebeer.util.Formatter;
 import com.futurebeer.util.LoggerApp;
 import com.futurebeer.util.MessagesUtil;
 
 @ManagedBean(name="resumoPedidoBean")
-@SessionScoped
+@ViewScoped
 public class ResumoPedidoBean implements Serializable{
 	private static final long serialVersionUID = 7708544055015828412L;
-	
+
+	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ResumoPedidoBean.class);
+
 	private MesaDTO selectedMesa;
 
 	private ItemPedidoDTO selectedItem = null;
+	
+	private List<ItemPedidoDTO> pedidosMesa = null;
 	
 	public MesaDTO getSelectedMesa() {
 		return selectedMesa;
@@ -39,32 +46,31 @@ public class ResumoPedidoBean implements Serializable{
 	public void setSelectedItem(ItemPedidoDTO itemPedido) {
 		this.selectedItem = itemPedido;
 	}	
-	
-	List<ItemPedidoDTO> pedidos = null;
 
 	public List<ItemPedidoDTO> getPedidosMesa(){
 		try {
 			if (getSelectedMesa() != null){
-				pedidos = FactoryDao.getInstance().getMesaOcupacaoDao().getPedidosMesa(getSelectedMesa().getIdOcupacao());
+				pedidosMesa = FactoryDao.getInstance().getMesaOcupacaoDao().getPedidosMesa(getSelectedMesa().getIdOcupacao());
 			}
 		} catch (Exception e) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Mensagem",  "Erro ao recuperar pedidos da mesa.");  
 			FacesContext.getCurrentInstance().addMessage(null, message);
-			LoggerApp.error("Erro ao recuperar pedidos da mesa." , e);
+			logger.error("Erro ao recuperar pedidos da mesa." , e);
 		}
 		
-		return pedidos;
+		return pedidosMesa;
 	}
 	
-	public double getTotalPedidos(){
-		if (pedidos == null){
-			return 0;
+	public String getTotalPedidos(){
+		if (pedidosMesa == null){
+			return "0";
 		}
 		double total = 0;
-		for (ItemPedidoDTO pedido: pedidos) {
+		for (ItemPedidoDTO pedido: pedidosMesa) {
 			total += pedido.getValorPedido();
 		}
-		return total;
+		
+		return Formatter.INSTANCE.formataDecimal(total);
 	}
 	
 	public String deleteItemPedidoMesa(){
@@ -83,6 +89,6 @@ public class ResumoPedidoBean implements Serializable{
 		FacesMessage message = new FacesMessage(severity, "Mensagem",  mensagem);  
 		FacesContext.getCurrentInstance().addMessage(null, message);
 		
-		return "dashboard";
+		return null;
 	}	
 }

@@ -30,7 +30,7 @@ public class ProdutoBean implements Serializable{
 		atualizaListagemProdutos();
 	}
 
-	private  void atualizaListagemProdutos() {
+	private void atualizaListagemProdutos() {
 		try {
 			List<ProdutoDTO> produtos = FactoryDao.getInstance().getProdutoDao().getProdutos();
 			
@@ -67,6 +67,7 @@ public class ProdutoBean implements Serializable{
 	}
 	
 	public SelectItem[] getProdutos(){
+		atualizaListagemProdutos();
 		return gruposItem;
 	}
 		

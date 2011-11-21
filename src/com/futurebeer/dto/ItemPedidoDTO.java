@@ -2,6 +2,7 @@ package com.futurebeer.dto;
 
 import java.io.Serializable;
 
+import com.futurebeer.util.Formatter;
 import com.futurebeer.util.TipoProduto;
 
 public class ItemPedidoDTO implements Serializable{
@@ -19,9 +20,10 @@ public class ItemPedidoDTO implements Serializable{
 	
 	private int qtdade;
 	
-	//valor do produto x qtdade
-	private double valorPedido;
+	private double valorUnitario;
 	
+	//valor do produto x qtdade
+
 	public ItemPedidoDTO() {}
 
 	public int getIndice() {
@@ -73,10 +75,26 @@ public class ItemPedidoDTO implements Serializable{
 	}
 
 	public double getValorPedido() {
-		return valorPedido;
+		return valorUnitario * qtdade;
 	}
 
-	public void setValorPedido(double valorPedido) {
-		this.valorPedido = valorPedido;
+	public String getValorTotalFormatado() {
+		return Formatter.INSTANCE.formataDecimal(getValorPedido());
+	}
+	
+	public void setValorUnitario(double valorUnitario) {
+		this.valorUnitario = valorUnitario;
+	}
+
+	public double getValorUnitario() {
+		return valorUnitario;
+	}
+
+	public String getValorUnitarioFormatado() {
+		return Formatter.INSTANCE.formataDecimal(valorUnitario);
+	}
+
+	public String toString() {
+		return "[ItemPedidoDTO - descricao: " + descricao + ", qtd:" + qtdade+ "]";
 	}
 }

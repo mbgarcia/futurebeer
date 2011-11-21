@@ -12,3 +12,12 @@
    font-style: italic; 
    color: red; 
 } 
+
+.ui-datatable .ui-datatable-data tr{
+    height : 8px; !important;
+}
+
+.ui-widget, 
+.ui-widget .ui-widget {
+	font-size: 14px !important;
+}

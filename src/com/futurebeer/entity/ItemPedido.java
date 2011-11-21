@@ -33,9 +33,6 @@ public class ItemPedido implements Serializable{
 	@JoinColumn(name="produto_id", referencedColumnName="produto_id")
 	private Produto produto;
 	
-	@Column(name="excluido")
-	private Integer excluido;
-
 	public Integer getId() {
 		return id;
 	}
@@ -68,14 +65,6 @@ public class ItemPedido implements Serializable{
 		this.produto = produto;
 	}
 	
-	public Integer getExcluido() {
-		return excluido;
-	}
-
-	public void setExcluido(Integer excluido) {
-		this.excluido = excluido;
-	}
-
 	@Override
 	public String toString() {
 		return "[qtdade: " + this.getQtdade() + " , produto: " + (this.getProduto() != null?this.getProduto().getDescricao():"nao ha")+"]";

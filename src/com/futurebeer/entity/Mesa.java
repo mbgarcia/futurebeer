@@ -89,4 +89,8 @@ public class Mesa implements Serializable{
 	public void setOcupacoes(List<MesaOcupacao> ocupacoes) {
 		this.ocupacoes = ocupacoes;
 	}
+	
+	public String toString() {
+		return "Mesa [numero: " + numero + "]";
+	}
 }

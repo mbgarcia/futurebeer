@@ -1,10 +1,14 @@
 package com.futurebeer.dao;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.futurebeer.dao.interfaces.IMesaOcupacaoDao;
 import com.futurebeer.dto.ItemPedidoDTO;
@@ -14,16 +18,40 @@ import com.futurebeer.entity.MesaOcupacao;
 import com.futurebeer.entity.Pedido;
 import com.futurebeer.entity.PersistenceManager;
 import com.futurebeer.exception.BaseException;
-import com.futurebeer.util.LoggerApp;
+import com.futurebeer.util.MesaUtil;
 
 public class MesaOcupacaoDao implements IMesaOcupacaoDao{
+	private static final Logger logger = LoggerFactory.getLogger(MesaOcupacaoDao.class);
 
 	public List<MesaDTO> getOcupacoes() throws BaseException {
-		return null;
+		logger.debug("Listando as ocupacoes.");
+		List<MesaDTO> ocupacoes = new ArrayList<MesaDTO>();
+		EntityManager em = null;
+		try {
+			EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
+			em = emf.createEntityManager();
+			List<MesaOcupacao> lista = em.createQuery(" from MesaOcupacao where fechamento != null order by abertura desc", MesaOcupacao.class).getResultList();
+			for (MesaOcupacao ocupacao : lista) {
+				MesaDTO mesa = new MesaDTO();
+				mesa.setAbertura(ocupacao.getAbertura());
+				mesa.setIdOcupacao(ocupacao.getId());
+				mesa.setFechamento(ocupacao.getFechamento());
+				mesa.setNumero(ocupacao.getMesa().getNumero());
+				mesa.setId(ocupacao.getMesa().getId());
+				mesa.setValor(MesaUtil.calculaTotalMesa(ocupacao));
+				ocupacoes.add(mesa);
+			}
+		} catch (Exception e) {
+			throw new BaseException("Erro ao recuperar ocupacoes.", e);
+		}finally{
+			em.close();
+		}
+
+		return ocupacoes;		
 	}
 
 	public MesaOcupacao findById(Integer id) throws BaseException {
-		LoggerApp.debug("mesaOcupacao - findById: " + id);
+		logger.debug("mesaOcupacao - findById: " + id);
 		MesaOcupacao ocupacao = null;
 		EntityManager em = null;
 		try {
@@ -31,7 +59,7 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 			em = emf.createEntityManager();
 			ocupacao = em.find(MesaOcupacao.class, id);
 		} catch (Exception e) {
-			throw new BaseException("Erro ao recuperar mesaOcupacao pelo id :" + id, e);
+			throw new BaseException("Erro ao recuperar mesaOcupacao pelo id da ocupacao:" + id, e);
 		}finally{
 			em.close();
 		}
@@ -43,7 +71,7 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 		if (idOcupacao == null){
 			return null;
 		}
-		LoggerApp.debug("Recuperando pedidos de mesa ocupada: " + idOcupacao);
+		logger.debug("Recuperando pedidos de mesa ocupada [id : " + idOcupacao + "]");
 		
 		List<ItemPedidoDTO> pedidosDTO = new LinkedList<ItemPedidoDTO>();
 		
@@ -64,15 +92,13 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 				List<ItemPedido> itens = pedido.getItens();
 				
 				for (ItemPedido item : itens) {
-					if (item.getExcluido() == null){
-						ItemPedidoDTO itemDTO = new ItemPedidoDTO();
-						itemDTO.setIdItemPedido(item.getId());
-						itemDTO.setQtdade(item.getQtdade());
-						itemDTO.setDescricao(item.getProduto().getDescricao());
-						itemDTO.setValorPedido(item.getQtdade() * item.getProduto().getValor());
-						
-						pedidosDTO.add(itemDTO);
-					}
+					ItemPedidoDTO itemDTO = new ItemPedidoDTO();
+					itemDTO.setIdItemPedido(item.getId());
+					itemDTO.setQtdade(item.getQtdade());
+					itemDTO.setDescricao(item.getProduto().getDescricao());
+					itemDTO.setValorUnitario(item.getProduto().getValor());
+					
+					pedidosDTO.add(itemDTO);
 				}
 			}
 		} catch (Exception e) {
@@ -85,7 +111,7 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 	}
 
 	public void removeItemPedido(Integer idItemPedido) throws BaseException {
-		LoggerApp.debug("Removendo o item do pedido: " + idItemPedido);
+		logger.debug("Removendo o item do pedido: " + idItemPedido);
 		EntityManager em = null;
 		ItemPedido item = null;
 		try {
@@ -93,8 +119,7 @@ public class MesaOcupacaoDao implements IMesaOcupacaoDao{
 			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			item = em.find(ItemPedido.class, idItemPedido);
-			item.setExcluido(1);
-			em.merge(item);
+			em.remove(item);
 			em.getTransaction().commit();
 		} catch (Exception e) {
 			throw new BaseException("Erro ao remover o item do pedido pelo id :" + idItemPedido, e);

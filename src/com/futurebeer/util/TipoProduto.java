@@ -16,7 +16,6 @@ public enum TipoProduto {
 		return idTipo;
 	}
 	
-	
 	public int getIdTipo() {
 		return idTipo;
 	}
@@ -25,7 +24,15 @@ public enum TipoProduto {
 		return descricao;
 	}
 	
+	public TipoProduto getByDescricao(String descricao){
+		return TipoProduto.valueOf(descricao);
+	}
+	
 	public String toString() {
 		return descricao;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(TipoProduto.valueOf("BEBIDA"));
 	}
 }

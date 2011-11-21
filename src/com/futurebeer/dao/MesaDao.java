@@ -14,14 +14,13 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.futurebeer.dao.interfaces.IMesaDao;
 import com.futurebeer.dto.MesaDTO;
-import com.futurebeer.entity.ItemPedido;
 import com.futurebeer.entity.Mesa;
 import com.futurebeer.entity.MesaOcupacao;
-import com.futurebeer.entity.Pedido;
 import com.futurebeer.entity.PersistenceManager;
 import com.futurebeer.exception.BaseException;
 import com.futurebeer.util.LoggerApp;
 import com.futurebeer.util.MesaNumeroComparable;
+import com.futurebeer.util.MesaUtil;
 import com.futurebeer.util.MessagesUtil;
 import com.futurebeer.util.StatusMesa;
 
@@ -55,13 +54,10 @@ public class MesaDao implements IMesaDao{
 	public List<MesaDTO> getMesas() throws BaseException{
 		EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();
 		EntityManager em = null;
-//		Session session = null;
 		List<MesaDTO> mesas = null;
 		
 		try {
 			em = emf.createEntityManager();
-//			session = (Session)em.getDelegate();
-//			List<Mesa> lista = session.createCriteria(Mesa.class).list();
 			List<Mesa> lista = em.createQuery("select mesa from Mesa mesa", Mesa.class).getResultList();
 			mesas = new LinkedList<MesaDTO>();
 			for (Mesa item : lista) {
@@ -97,7 +93,6 @@ public class MesaDao implements IMesaDao{
 		} catch (Exception e) {
 			throw new BaseException("Erro ao recuperar mesas.", e);
 		}finally{
-//			session.close();
 			em.close();
 		}
 		
@@ -147,7 +142,7 @@ public class MesaDao implements IMesaDao{
 			Mesa mesa = em.find(Mesa.class, Integer.valueOf(mesaDTO.getId()));
 		
 			ocupacao.setFechamento(Calendar.getInstance().getTime());
-			ocupacao.setTotal(calculaTotalMesa(ocupacao));
+			ocupacao.setTotal(MesaUtil.calculaTotalMesa(ocupacao));
 
 			em.merge(ocupacao);
 			mesa.setStatus(StatusMesa.LIVRE);
@@ -161,18 +156,6 @@ public class MesaDao implements IMesaDao{
 		return this.getMesas();
 	}
 	
-	private double calculaTotalMesa(MesaOcupacao ocupacao) throws BaseException{
-		List<Pedido> pedidos = ocupacao.getPedidos();
-		double total = 0;
-		for (Pedido pedido : pedidos) {
-			List<ItemPedido> itens = pedido.getItens();
-			for (ItemPedido itemPedido : itens) {
-				total += itemPedido.getQtdade() * itemPedido.getProduto().getValor();
-			}
-		}
-		return total;
-	}
-
 	public void addMesaExtra(MesaDTO mesaDTO) throws BaseException {
 		LoggerApp.debug("Adicionando mesa: " + mesaDTO);
 		EntityManagerFactory emf = PersistenceManager.getInstance().getEntityManagerFactory();

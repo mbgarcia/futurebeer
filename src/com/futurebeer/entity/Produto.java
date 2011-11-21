@@ -23,6 +23,9 @@ public class Produto implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 	
+	@Column(nullable=false, unique=true)
+	private Integer codigo;
+	
 	@Column(name="descricao")
 	private String descricao;
 	
@@ -42,6 +45,14 @@ public class Produto implements Serializable{
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Integer getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(Integer codigo) {
+		this.codigo = codigo;
 	}
 
 	public String getDescricao() {
