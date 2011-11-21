@@ -34,6 +34,12 @@
 							</f:facet>
 							#{item.tipo.descricao}
 						</p:column>
+						<p:column width="100">
+							<f:facet name="header">
+								#{msgs.produto_codigo}
+							</f:facet>
+							#{item.codigo}
+						</p:column>
 						<p:column width="200">
 							<f:facet name="header">
 								#{msgs.produto_descricao}
@@ -48,13 +54,13 @@
 						</p:column>
 						
 						<p:column style="width:32px">
-		           			<p:commandButton image="ui-icon ui-icon-search" oncomplete="cadProdutosDialog.show()" update="panelCadastro">  
+		           			<p:commandButton image="ui-icon ui-icon-search" oncomplete="cadProdutosDialog.show()" update="panelCadastro" title="#{msgs.btn_atualizar}">  
 								<f:setPropertyActionListener value="#{item}" target="#{cadProdutoBean.selectedProduto}" />
 		               		</p:commandButton>  
 		               	</p:column>
 		
 						<p:column style="width:32px">
-		           			<p:commandButton image="ui-icon ui-icon-trash" oncomplete="confirmDialog.show()" update="campoId">
+		           			<p:commandButton image="ui-icon ui-icon-trash" oncomplete="confirmDialog.show()" update="campoId" title="#{msgs.btn_excluir}">
 								<f:setPropertyActionListener value="#{item}" target="#{cadProdutoBean.selectedProduto}" />
 							</p:commandButton>
 		               	</p:column>
@@ -77,6 +83,13 @@
 				<h:column />
 				<h:column />
 				
+				<h:outputLabel for="codigo" value="#{msgs.produto_codigo}"/>
+				<h:inputText id="codigo" value="#{cadProdutoBean.codigo}" required="true" requiredMessage="#{msgs.required_produto_codigo}" validatorMessage="#{msgs.invalid_produto_codigo}">
+					<f:validateLength minimum="1"/> 
+					<f:validateLength maximum="5"/> 
+				</h:inputText>
+				<h:message for="codigo" errorClass="errors"/>
+
 				<h:outputLabel for="descricao" value="#{msgs.produto_descricao}"/>
 				<h:inputText id="descricao" value="#{cadProdutoBean.descricao}" required="true" requiredMessage="#{msgs.required_produto_descricao}" validatorMessage="#{msgs.invalid_produto_descricao}">
 					<f:validateLength minimum="2"/> 

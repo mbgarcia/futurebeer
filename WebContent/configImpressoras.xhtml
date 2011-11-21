@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.prime.com.tr/ui">
+<h:head>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/styles.css"/>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/hot-sneaks/skin.css"/>  
+	<title>
+		<h:outputText value="#{msgs.title_config_impressoras}"/> 
+	</title>
+</h:head>
+
+<h:body>
+	<f:view contentType="text/html">
+	<h:form prependId="false">
+		<p:commandButton action="#{mesaBean.abrirDashboard}" value="#{msgs.btn_mesas}" ajax="false" immediate="true"/>
+		<p:growl id="messages" showDetail="true" showSummary="false" life="2000"/>
+
+				<p:dataTable var="item" id="tableImpressoras" value="#{impressoraBean.configs}" paginator="false" rows="4" rowEditListener="#{impressoraBean.saveConfig}">
+						<f:facet name="header">
+							#{msgs.impressoras_tabela}
+						</f:facet>
+					
+					<p:column width="200" headerText="#{msgs.impressora_categoria}">
+						<h:outputText value="#{item.categoria}"/>
+					</p:column>
+
+					<p:column width="100" headerText="#{msgs.impressora_porta}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{item.porta}"/>
+							</f:facet>
+							<f:facet name="input">
+								<h:inputText value="#{item.porta}" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="Options">
+						<p:rowEditor/>
+	               	</p:column>
+				</p:dataTable>
+
+	</h:form>	
+	</f:view>
+</h:body>
+</html>

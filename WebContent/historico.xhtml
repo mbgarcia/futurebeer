@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:components="http://java.sun.com/jsf/composite/components"	
+	xmlns:p="http://primefaces.prime.com.tr/ui">
+<h:head>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/styles.css"/>
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/hot-sneaks/skin.css"/>  
+	<title>
+		<h:outputText value="#{msgs.title_historico}"/> 
+	</title>
+</h:head>
+
+<h:body>
+	<f:view contentType="text/html">
+	<h:form prependId="false">
+		<p:commandButton action="#{mesaBean.abrirDashboard}" value="#{msgs.btn_mesas}" ajax="false" immediate="true"/>
+
+		<p:growl id="messages" showDetail="true" showSummary="false" life="2500"/>
+				<p:dataTable var="item" id="tableHistorico" value="#{historicoBean.mesas}" paginator="true" rows="10"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">					
+					<p:column width="50" headerText="#{msgs.mesa_numero}">
+						<h:outputText value="#{item.numero}"/>
+					</p:column>
+					<p:column headerText="#{msgs.mesa_abertura}">
+						<h:outputText value="#{item.aberturaFormatada}"/>
+					</p:column>
+					<p:column headerText="#{msgs.mesa_fechamento}">
+						<h:outputText value="#{item.fechamentoFormatado}"/>
+					</p:column>
+					<p:column width="50" headerText="#{msgs.valor_label}">
+						<h:outputText value="#{item.valorFormatado}"/>
+					</p:column>
+					<p:column style="width:32px">
+	           			<p:commandButton image="ui-icon ui-icon-search" oncomplete="pedidosDialog.show()" update="dialog:itensTable, dialog:tablePedidoResumo" title="#{msgs.btn_atualizar}">  
+							<f:setPropertyActionListener value="#{item}"	target="#{pedidoBean.selectedMesa}" />
+							<f:setPropertyActionListener value="#{item}"	target="#{resumoPedidoBean.selectedMesa}" />
+	               		</p:commandButton>  
+	               	</p:column>
+				</p:dataTable>
+	</h:form>
+
+	<components:pedidoDialog fecharMesaVisivel="false" atualizarAoFechar="tableHistorico" id="dialog"/>	
+			
+	</f:view>
+</h:body>
+</html>

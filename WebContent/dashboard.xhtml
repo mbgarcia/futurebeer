@@ -6,6 +6,7 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"	 
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:components="http://java.sun.com/jsf/composite/components"
 	xmlns:p="http://primefaces.prime.com.tr/ui">
 
 <h:head>
@@ -20,9 +21,11 @@
 	<f:view contentType="text/html">
 	<h:form prependId="false">
 		<p:commandButton action="#{produtoBean.initCadastro}" value="#{msgs.btn_cadastro_produtos}" ajax="false"/>
-		<p:growl id="messages" showDetail="true" showSummary="false" life="2000"/>		
+		<p:commandButton action="#{impressoraBean.abrirImpressoras}" value="#{msgs.btn_configurar_impressoras}" ajax="false"/>
+		<p:commandButton action="#{historicoBean.abrirHistorico}" value="#{msgs.btn_historico}" ajax="false"/>
+		<p:growl id="messages" showDetail="true" showSummary="false" life="2500"/>		
 		
-		<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="25" paginator="true" effect="true"
+		<p:dataGrid var="mesa" value="#{mesaBean.mesas}" columns="6" rows="24" paginator="true" effect="true"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">		
 			<p:column>
 				<p:panel header="#{msgs.mesa_label} #{mesa.numero}" style="text-align:center;" styleClass="#{mesa.cssMesa}">
@@ -31,19 +34,13 @@
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
 	                       	<h:graphicImage  library="images" name="open_#{! mesa.ocupada}.png"/>
 	                   	</h:commandLink>
-						<p:commandLink update="pedidosDialog, inputQtdade, itensTable" disabled="#{! mesa.ocupada}" oncomplete="pedidosDialog.show()" title="#{msgs.btn_fazer_pedido}">  
+						<p:commandLink update="dialog:itensTable, dialog:tablePedidoResumo" disabled="#{! mesa.ocupada}" oncomplete="pedidosDialog.show()" title="#{msgs.btn_fazer_pedido}">  
 	                       	<p:graphicImage value="/resources/images/menu_#{mesa.ocupada}.png"/>
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{pedidoBean.selectedMesa}" />
-	                   	</p:commandLink>
-						<p:commandLink update="tablePedidoResumo" disabled="#{! mesa.ocupada}" oncomplete="pedidosResumoDialog.show()" title="#{msgs.btn_ver_pedidos_mesa}">  
-	                       	<p:graphicImage value="/resources/images/search_#{mesa.ocupada}.png" />
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{resumoPedidoBean.selectedMesa}" />
 	                   	</p:commandLink>
-						<h:commandLink title="#{msgs.btn_fechar_mesa}" disabled="#{! mesa.ocupada}" action="#{mesaBean.fecharMesa}">
-	                       	<h:graphicImage library="images" name="close_#{mesa.ocupada}.png"/>
-	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
-	                   	</h:commandLink>
+	                   	
 	                   	<p:separator style="width:5px;height:30px"/>
 	           			<p:commandButton image="ui-icon ui-icon-circle-plus" style="width:20px;height:20px" action="#{mesaBean.addMesaExtra}" rendered="#{mesa.extra == 0}" ajax="false">
 	                       	<f:setPropertyActionListener value="#{mesa}"	target="#{mesaBean.selectedMesa}" />
@@ -57,98 +54,8 @@
 		</p:dataGrid>
 	</h:form>
 	
-	<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosDialog" width="600" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
-		<h:form prependId="false">
-			<p:outputPanel id="pedidosDetail" style="text-align:left;">
-				<p>
-					<h:outputLabel for="listaProduto" value="#{msgs.produtos_label}" />
-					<br/>
-					<h:selectOneListbox id="listaProduto" value="#{pedidoBean.idProduto}" size="10" style="width:100%" required="true" requiredMessage="#{msgs.required_pedido_produto}">
-						<f:selectItems value="#{produtoBean.produtos}" var="p" itemLabel="#{p.descricao}" itemValue="#{p.idProduto}"/>
-					</h:selectOneListbox>
-				</p>
-				<p>
-					<h:outputLabel for="qtdade" value="#{msgs.qtdade_label}" />
-					<h:inputText id="qtdade" value="#{pedidoBean.qtdade}" required="true" requiredMessage="#{msgs.required_pedido_qtdade}">
-						<f:validateLongRange minimum="1"/>
-					</h:inputText>
-					<p:commandButton actionListener="#{pedidoBean.addItem}" value="#{msgs.btn_add_item}" update="itensTable, qtdade, messages"/>
-				</p>
-				<p:dataTable var="item" value="#{pedidoBean.itens}" id="itensTable" selectionMode="single">
-					<p:column width="300">
-						<f:facet name="header">
-							#{msgs.produto_label}
-						</f:facet>
-						<h:outputText value="#{item.descricao}"/>
-					</p:column>
-					<p:column width="40">
-						<f:facet name="header">
-							#{msgs.qtdade_label}
-						</f:facet>
-						<h:outputText value="#{item.qtdade}"/>
-					</p:column>
-					<p:column style="width:32px">
-	           			<p:commandButton image="ui-icon ui-icon-trash" update="pedidosDetail, messages" action="#{pedidoBean.deleteItemPedido}" immediate="true">
-	           				<f:setPropertyActionListener value="#{item}"	target="#{pedidoBean.selectedItem}" />
-	           			</p:commandButton>
-	               	</p:column>
-				</p:dataTable>
-				<p:commandButton actionListener="#{pedidoBean.cancelaPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_cancelar_pedido}" immediate="true"/>
-				<p:commandButton action="#{pedidoBean.concluirPedido}" oncomplete="handleCadastroRequest(xhr, status, args)" value="#{msgs.btn_concluir_pedido}" update="messages" immediate="true"/>
-				
-			</p:outputPanel>
-		</h:form>
-	</p:dialog>
-	<script type="text/javascript">
-	    function handleCadastroRequest(xhr, status, args) {  
-	        if(!args.validationFailed) {  
-	        	pedidosDialog.hide();  
-	        }  
-	    }  
-	</script>		
-
-	<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosResumoDialog" width="800" height="600" modal="true" resizable="false" closable="false" showEffect="clip" hideEffect="clip">
-		<h:form prependId="false">
-			<p:outputPanel id="pedidosResumoDetail" style="text-align:left;">
-				<p:dataTable var="item" value="#{resumoPedidoBean.pedidosMesa}" id="tablePedidoResumo">
-					<f:facet name="header">
-						#{msgs.title_resumo_pedidos}
-					</f:facet>  
-					
-					<p:columnGroup type="header">
-						<p:row>
-							<p:column headerText="#{msgs.produto_label}"/>
-							<p:column headerText="#{msgs.qtdade_label}"/>
-							<p:column headerText="#{msgs.valor_label}"/>
-						</p:row>
-					</p:columnGroup>
-
-					<p:column width="300">
-						#{item.descricao}
-					</p:column>
-					<p:column width="20">
-						#{item.qtdade}
-					</p:column>
-					<p:column width="40">
-						#{item.valorPedido}
-					</p:column>
-					<p:column style="width:32px">
-	           			<p:commandButton image="ui-icon ui-icon-trash" update="pedidosResumoDetail, messages" action="#{resumoPedidoBean.deleteItemPedidoMesa}" immediate="true">
-	           				<f:setPropertyActionListener value="#{item}"	target="#{resumoPedidoBean.selectedItem}" />
-	           			</p:commandButton>
-	               	</p:column>
-
-					<p:columnGroup type="footer">
-						<p:row>
-						 	<p:column colspan="2" footerText="Total:" style="text-align:right"  />
-							<p:column footerText="#{resumoPedidoBean.totalPedidos}"/>
-						</p:row>
-					</p:columnGroup>
-				</p:dataTable>
-				<p:commandButton oncomplete="pedidosResumoDialog.hide()" value="#{msgs.btn_fechar_pedido}"/>
-			</p:outputPanel>
-		</h:form>
-	</p:dialog>
+	<components:pedidoDialog id="dialog"/>	
+	
 	</f:view>
 </h:body>
 </html>
