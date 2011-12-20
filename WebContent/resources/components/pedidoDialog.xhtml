@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:composite="http://java.sun.com/jsf/composite">	
+
+<h:body>
+	
+	<composite:interface>
+		<composite:attribute name="fecharMesaVisivel" default="true"/>
+		<composite:attribute name="atualizarAoFechar" default=""/>
+	</composite:interface>
+	
+	<composite:implementation>
+		<p:dialog header="#{msgs.pedido_label}" widgetVar="pedidosDialog" width="900"  height="600" modal="true" id="pedidosDialog"
+			resizable="false" closable="false" showEffect="clip" hideEffect="clip" onCloseUpdate="#{cc.attrs.atualizarAoFechar}">
+			<h:form prependId="false" id="formDialog">
+				<p:commandButton title="#{msgs.btn_fechar_mesa}" action="#{mesaBean.fecharMesa}" value="#{msgs.btn_fechar_mesa}" immediate="true" ajax="false" rendered="#{cc.attrs.fecharMesaVisivel}"/>
+				<p:commandButton title="#{msgs.btn_imprimir_conta}" action="#{mesaBean.imprimirConta}" value="#{msgs.btn_imprimir_conta}" immediate="true" ajax="false"/>
+			
+				<p:layout style="width:850px; height:500px;">
+					<p:layoutUnit position="left" width="450" resizable="false">
+						<p:outputPanel id="pedidosDetail" style="text-align:left;">
+							<h:panelGrid columns="3">
+								<h:outputLabel for="codProduto" value="#{msgs.produto_codigo}:" />
+								<h:inputText id="codProduto" value="#{pedidoBean.codProduto}">
+									<p:ajax event="keyup" update="descProduto, btAddItem"/>
+								</h:inputText>
+								<h:outputText id="descProduto" value="#{pedidoBean.descProduto}"/>
+			
+								<h:outputLabel for="qtdade" value="#{msgs.qtdade_label}:" />
+								<h:inputText id="qtdade" value="#{pedidoBean.qtdade}" required="true" requiredMessage="#{msgs.required_pedido_qtdade}">
+									<f:validateLongRange minimum="1"/>
+								</h:inputText>
+								<p:commandButton id="btAddItem" actionListener="#{pedidoBean.addItem}" disabled="#{!pedidoBean.addItem}" value="#{msgs.btn_add_item}" update="itensTable, codProduto, descProduto, qtdade, messages"/>
+							</h:panelGrid>
+			
+							<p:dataTable var="item" value="#{pedidoBean.itens}" id="itensTable" selectionMode="single" paginator="true" rows="5" paginatorTemplate="{PreviousPageLink} {NextPageLink}">
+								<p:column width="300">
+									<f:facet name="header">
+										#{msgs.produto_label}
+									</f:facet>
+									<h:outputText value="#{item.descricao}"/>
+								</p:column>
+								<p:column width="40">
+									<f:facet name="header">
+										#{msgs.qtdade_label}
+									</f:facet>
+									<h:outputText value="#{item.qtdade}"/>
+								</p:column>
+								<p:column style="width:32px">
+				           			<p:commandButton image="ui-icon ui-icon-trash" update="pedidosDetail, messages" action="#{pedidoBean.deleteItemPedido}" immediate="true" title="#{msgs.btn_excluir}">
+				           				<f:setPropertyActionListener value="#{item}"	target="#{pedidoBean.selectedItem}" />
+				           			</p:commandButton>
+				               	</p:column>
+							</p:dataTable>
+							<p:commandButton actionListener="#{pedidoBean.cancelaPedido}" oncomplete="pedidosDialog.hide()" value="#{msgs.btn_cancelar_pedido}" immediate="true"/>
+							<p:commandButton action="#{pedidoBean.concluirPedido}" oncomplete="handleCadastroRequest(xhr, status, args)" value="#{msgs.btn_concluir_pedido}" update="messages, tablePedidoResumo" immediate="true"/>				
+						</p:outputPanel>
+					</p:layoutUnit>
+					
+					<p:layoutUnit position="center">
+						<p:outputPanel id="pedidosResumoDetail" style="text-align:left;">
+							<p:dataTable var="item" value="#{resumoPedidoBean.pedidosMesa}" id="tablePedidoResumo" paginator="true" rows="8" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}" >
+								<f:facet name="header">
+									#{msgs.title_resumo_pedidos}
+								</f:facet>  
+								
+								<p:columnGroup type="header">
+									<p:row>
+										<p:column headerText="#{msgs.produto_label}" width="60"/>
+										<p:column headerText="#{msgs.qtdade_label}" width="20"/>
+										<p:column headerText="#{msgs.valor_label}" width="30"/>
+									</p:row>
+								</p:columnGroup>
+			
+								<p:column>
+									#{item.descricao}
+								</p:column>
+								<p:column>
+									#{item.qtdade}
+								</p:column>
+								<p:column>
+									#{item.valorTotalFormatado}
+								</p:column>
+								<p:column style="width:32px">
+				           			<p:commandButton image="ui-icon ui-icon-trash" update="pedidosResumoDetail, messages" action="#{resumoPedidoBean.deleteItemPedidoMesa}" immediate="true" title="#{msgs.btn_excluir}">
+				           				<f:setPropertyActionListener value="#{item}"	target="#{resumoPedidoBean.selectedItem}" />
+				           			</p:commandButton>
+				               	</p:column>
+			
+								<p:columnGroup type="footer">
+									<p:row>
+									 	<p:column colspan="2" footerText="Total:" style="text-align:right"  />
+										<p:column footerText="#{resumoPedidoBean.totalPedidos}"/>
+									</p:row>
+								</p:columnGroup>
+							</p:dataTable>
+						</p:outputPanel>
+					</p:layoutUnit>
+				</p:layout>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+		    function handleCadastroRequest(xhr, status, args) {  
+		        if(!args.validationFailed) {  
+		        	pedidosDialog.hide();  
+		        }  
+		    }  
+		</script>
+	</composite:implementation>
+</h:body>
+</html>
